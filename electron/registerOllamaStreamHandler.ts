@@ -31,10 +31,12 @@ export default function registerOllamaStreamHandler() {
           const decodedChunk = textDecoder.decode(value, { stream: true });
           const parsedData = JSON.parse(decodedChunk) as OllamaStreamResponse;
 
-          event.sender.send(
-            'ollama-stream-response',
-            parsedData.done ? '' : parsedData.message.content,
-          );
+          if (!parsedData.done) {
+            event.sender.send(
+              'ollama-stream-response',
+              parsedData.message.content,
+            );
+          }
         }
       } catch (error) {
         const errorMessage =
