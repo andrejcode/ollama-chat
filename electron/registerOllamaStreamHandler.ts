@@ -1,18 +1,18 @@
-import { OllamaStreamResponse } from '@shared/types';
+import type { Message, OllamaStreamResponse } from '@shared/types';
 import { ipcMain } from 'electron';
 import { wrapAsync } from '@shared/utils';
 
 export default function registerOllamaStreamHandler() {
   ipcMain.on(
     'ollama-stream',
-    wrapAsync(async (event: Electron.IpcMainEvent, userPrompt: string) => {
+    wrapAsync(async (event: Electron.IpcMainEvent, messages: Message[]) => {
       try {
         const chatResponse = await fetch('http://localhost:11434/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             model: 'gemma2:latest',
-            messages: [{ role: 'user', content: userPrompt }],
+            messages: messages.map(({ role, content }) => ({ role, content })),
             stream: true,
           }),
         });
@@ -26,7 +26,11 @@ export default function registerOllamaStreamHandler() {
 
         for (;;) {
           const { done, value } = await streamReader.read();
-          if (done) break;
+
+          if (done) {
+            event.sender.send('ollama-stream-complete');
+            break;
+          }
 
           const decodedChunk = textDecoder.decode(value, { stream: true });
           const parsedData = JSON.parse(decodedChunk) as OllamaStreamResponse;
