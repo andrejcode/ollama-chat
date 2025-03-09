@@ -1,4 +1,5 @@
 import type { Message } from '@shared/types';
+import MarkdownRenderer from './MarkdownRenderer';
 
 export default function Chat({ messages }: { messages: Message[] }) {
   return (
@@ -9,7 +10,7 @@ export default function Chat({ messages }: { messages: Message[] }) {
             return (
               <div
                 key={message.id}
-                className="mx-3 my-2 self-end rounded-2xl bg-neutral-50 px-4 py-2 whitespace-pre-wrap dark:bg-neutral-700"
+                className="mx-3 my-2 self-end rounded-2xl bg-neutral-200 px-4 py-2 whitespace-pre-wrap dark:bg-neutral-700"
               >
                 {message.content}
               </div>
@@ -17,7 +18,7 @@ export default function Chat({ messages }: { messages: Message[] }) {
           } else if (message.role === 'assistant') {
             return (
               <div key={message.id} className="mx-3 my-2 self-start">
-                {message.content}
+                <MarkdownRenderer content={message.content} />
               </div>
             );
           }

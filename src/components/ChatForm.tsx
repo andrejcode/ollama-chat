@@ -49,7 +49,7 @@ export default function ChatForm({
 
   return (
     <form
-      className="flex w-full items-center justify-between rounded-2xl border border-neutral-100 bg-neutral-50 p-4 shadow-lg dark:border-none dark:bg-neutral-700"
+      className="mb-4 flex w-full items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow dark:border-none dark:bg-neutral-700"
       onSubmit={onSubmit}
     >
       <textarea
