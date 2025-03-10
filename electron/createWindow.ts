@@ -19,6 +19,7 @@ export default function createWindow() {
   const win = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
+      backgroundThrottling: false,
     },
   });
 

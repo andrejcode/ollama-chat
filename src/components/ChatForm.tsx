@@ -43,6 +43,11 @@ export default function ChatForm({
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
 
+      // If loading is in progress or the stream is not complete, don't submit
+      if (isLoading || !isStreamComplete) {
+        return;
+      }
+
       onSubmit(event as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
