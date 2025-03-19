@@ -19,15 +19,36 @@ export default function ChatForm({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
-    const handleGlobalKeyDown = () => {
+    let modifierActive = false;
+
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey) {
+        modifierActive = true;
+        return;
+      }
+
+      if (modifierActive) {
+        return;
+      }
+
       if (textareaRef.current) {
         textareaRef.current.focus();
       }
     };
 
-    window.addEventListener('keydown', handleGlobalKeyDown);
+    const handleGlobalKeyUp = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey) {
+        modifierActive = false;
+      }
+    };
 
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    window.addEventListener('keyup', handleGlobalKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleGlobalKeyDown);
+      window.removeEventListener('keyup', handleGlobalKeyUp);
+    };
   }, []);
 
   useEffect(() => {

@@ -1,8 +1,11 @@
+/// <reference types="vitest" />
+
 import { defineConfig } from 'vite';
 import path from 'node:path';
 import electron from 'vite-plugin-electron/simple';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import electronRender from 'vite-plugin-electron-renderer';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -44,11 +47,17 @@ export default defineConfig({
             undefined
           : {},
     }),
+    electronRender(),
   ],
   resolve: {
     alias: {
       '@shared': path.resolve(__dirname, 'shared'),
       '@': path.resolve(__dirname, 'src'),
     },
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['src/setupTests.ts'],
   },
 });
