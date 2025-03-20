@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 interface ChatFormProps {
   isStreamComplete: boolean;
   userInput: string;
-  isLoading: boolean;
+  isLoadingAssistantMessage: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
@@ -12,7 +12,7 @@ interface ChatFormProps {
 export default function ChatForm({
   isStreamComplete,
   userInput,
-  isLoading,
+  isLoadingAssistantMessage,
   onSubmit,
   onChange,
 }: ChatFormProps) {
@@ -65,7 +65,7 @@ export default function ChatForm({
       event.preventDefault();
 
       // If loading is in progress or the stream is not complete, don't submit
-      if (isLoading || !isStreamComplete) {
+      if (isLoadingAssistantMessage || !isStreamComplete) {
         return;
       }
 
@@ -88,7 +88,11 @@ export default function ChatForm({
       />
       <button
         type="submit"
-        disabled={isLoading || userInput.length === 0 || !isStreamComplete}
+        disabled={
+          isLoadingAssistantMessage ||
+          userInput.length === 0 ||
+          !isStreamComplete
+        }
         className="cursor-pointer rounded-full bg-neutral-800 p-2.5 text-neutral-100 shadow-md transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 disabled:cursor-not-allowed dark:bg-neutral-100 dark:text-neutral-800 dark:hover:bg-neutral-200"
       >
         <SendHorizonal size={20} />

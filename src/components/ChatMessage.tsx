@@ -4,10 +4,19 @@ import { Message } from '@shared/types';
 import clsx from 'clsx';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useState, useEffect } from 'react';
+import LoadingSpinner from './LoadingSpinner';
 
 type CopyStatus = 'idle' | 'copied' | 'error';
 
-export default function ChatMessage({ message }: { message: Message }) {
+interface ChatMessageProps {
+  message: Message;
+  isLoadingAssistantMessage?: boolean;
+}
+
+export default function ChatMessage({
+  message,
+  isLoadingAssistantMessage,
+}: ChatMessageProps) {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
@@ -59,6 +68,8 @@ export default function ChatMessage({ message }: { message: Message }) {
     >
       {message.role === 'user' ? (
         <div>{message.content}</div>
+      ) : isLoadingAssistantMessage ? (
+        <LoadingSpinner isLoading={isLoadingAssistantMessage} />
       ) : (
         <MarkdownRenderer content={message.content} />
       )}

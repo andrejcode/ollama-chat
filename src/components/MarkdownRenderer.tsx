@@ -10,7 +10,7 @@ import 'katex/dist/katex.min.css';
 
 export default function MarkdownRenderer({ content }: { content: string }) {
   return (
-    <div className="prose dark:prose-invert prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-transparent prose-pre:p-0 max-w-2xl">
+    <div className="prose dark:prose-invert prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-transparent prose-pre:p-0 max-w-4xl">
       <Markdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeSanitize, rehypeRaw, rehypeKatex]}

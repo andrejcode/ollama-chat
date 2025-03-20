@@ -10,6 +10,8 @@ export default function App() {
   const [isChatStarted, setIsChatStarted] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoadingAssistantMessage, setIsLoadingAssistantMessage] =
+    useState<boolean>(false);
 
   const openSidebar = () => {
     setIsSidebarOpen(true);
@@ -32,12 +34,19 @@ export default function App() {
             isChatStarted ? 'mt-0 translate-y-0' : 'mt-20 -translate-y-1/2',
           )}
         >
-          {isChatStarted && <Chat messages={messages} />}
+          {isChatStarted && (
+            <Chat
+              messages={messages}
+              isLoadingAssistantMessage={isLoadingAssistantMessage}
+            />
+          )}
           <ChatFormContainer
             isChatStarted={isChatStarted}
             setIsChatStarted={setIsChatStarted}
             messages={messages}
             setMessages={setMessages}
+            isLoadingAssistantMessage={isLoadingAssistantMessage}
+            setIsLoadingAssistantMessage={setIsLoadingAssistantMessage}
           />
         </main>
       </div>

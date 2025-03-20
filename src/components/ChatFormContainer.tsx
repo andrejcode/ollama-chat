@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@shared/types';
 import ChatForm from './ChatForm';
 import ErrorAlert from './ErrorAlert';
-import LoadingSpinner from './LoadingSpinner';
 import WelcomeTitle from './WelcomeTitle';
 
 interface ChatFormContainerProps {
@@ -11,6 +10,8 @@ interface ChatFormContainerProps {
   setIsChatStarted: React.Dispatch<React.SetStateAction<boolean>>;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  isLoadingAssistantMessage: boolean;
+  setIsLoadingAssistantMessage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ChatFormContainer({
@@ -18,15 +19,16 @@ export default function ChatFormContainer({
   setIsChatStarted,
   messages,
   setMessages,
+  isLoadingAssistantMessage,
+  setIsLoadingAssistantMessage,
 }: ChatFormContainerProps) {
   const [userInput, setUserInput] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isStreamComplete, setIsStreamComplete] = useState<boolean>(true);
 
   const sendPromptToOllama = (messagesToSend: Message[]) => {
     setErrorMessage('');
-    setIsLoading(true);
+    setIsLoadingAssistantMessage(true);
     setIsStreamComplete(false);
 
     window.electronApi.sendPrompt(messagesToSend);
@@ -41,7 +43,7 @@ export default function ChatFormContainer({
 
     const handleStreamResponse = (chunk: string) => {
       if (!firstChunkReceived) {
-        setIsLoading(false);
+        setIsLoadingAssistantMessage(false);
         firstChunkReceived = true;
       }
 
@@ -58,7 +60,7 @@ export default function ChatFormContainer({
       window.electronApi.onStreamResponse(handleStreamResponse);
 
     window.electronApi.onStreamError((error: string) => {
-      setIsLoading(false);
+      setIsLoadingAssistantMessage(false);
       setErrorMessage(error);
       setIsStreamComplete(true);
 
@@ -90,16 +92,15 @@ export default function ChatFormContainer({
   };
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
+    <div className="mx-auto w-full max-w-4xl">
       {errorMessage && (
         <ErrorAlert errorMessage={errorMessage} className="self-start" />
       )}
       <WelcomeTitle isChatStarted={isChatStarted} />
-      <LoadingSpinner isLoading={isLoading} />
       <ChatForm
         isStreamComplete={isStreamComplete}
         userInput={userInput}
-        isLoading={isLoading}
+        isLoadingAssistantMessage={isLoadingAssistantMessage}
         onSubmit={handleSubmit}
         onChange={handleChange}
       />
