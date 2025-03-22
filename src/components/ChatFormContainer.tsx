@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@shared/types';
 import ChatForm from './ChatForm';
-import ErrorAlert from './ErrorAlert';
 import WelcomeTitle from './WelcomeTitle';
 
 interface ChatFormContainerProps {
@@ -12,6 +11,8 @@ interface ChatFormContainerProps {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   isLoadingAssistantMessage: boolean;
   setIsLoadingAssistantMessage: React.Dispatch<React.SetStateAction<boolean>>;
+  clearErrorMessage: () => void;
+  updateErrorMessage: (message: string) => void;
 }
 
 export default function ChatFormContainer({
@@ -21,13 +22,14 @@ export default function ChatFormContainer({
   setMessages,
   isLoadingAssistantMessage,
   setIsLoadingAssistantMessage,
+  clearErrorMessage,
+  updateErrorMessage,
 }: ChatFormContainerProps) {
   const [userInput, setUserInput] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
   const [isStreamComplete, setIsStreamComplete] = useState<boolean>(true);
 
   const sendPromptToOllama = (messagesToSend: Message[]) => {
-    setErrorMessage('');
+    clearErrorMessage();
     setIsLoadingAssistantMessage(true);
     setIsStreamComplete(false);
 
@@ -59,9 +61,9 @@ export default function ChatFormContainer({
     const unsubscribe =
       window.electronApi.onStreamResponse(handleStreamResponse);
 
-    window.electronApi.onStreamError((error: string) => {
+    window.electronApi.onStreamError((errorMessage: string) => {
       setIsLoadingAssistantMessage(false);
-      setErrorMessage(error);
+      updateErrorMessage(errorMessage);
       setIsStreamComplete(true);
 
       unsubscribe();
@@ -93,9 +95,6 @@ export default function ChatFormContainer({
 
   return (
     <div className="mx-auto w-full max-w-4xl">
-      {errorMessage && (
-        <ErrorAlert errorMessage={errorMessage} className="self-start" />
-      )}
       <WelcomeTitle isChatStarted={isChatStarted} />
       <ChatForm
         isStreamComplete={isStreamComplete}

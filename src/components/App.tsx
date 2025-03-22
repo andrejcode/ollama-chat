@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import Sidebar from './Sidebar';
+import Sidebar from './ui/Sidebar';
 import Header from './Header';
 import Chat from './Chat';
 import ChatFormContainer from './ChatFormContainer';
 import type { Message } from '@shared/types';
+import Alert from './ui/Alert';
+import useError from '@/hooks/useError';
 
 export default function App() {
   const [isChatStarted, setIsChatStarted] = useState<boolean>(false);
@@ -12,6 +14,8 @@ export default function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingAssistantMessage, setIsLoadingAssistantMessage] =
     useState<boolean>(false);
+
+  const { errorMessage, clearErrorMessage, updateErrorMessage } = useError();
 
   const openSidebar = () => {
     setIsSidebarOpen(true);
@@ -23,9 +27,11 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-neutral-50 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100">
-      <Sidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar} />
+      <Sidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar}>
+        {''}
+      </Sidebar>
 
-      <div className="flex flex-1 flex-col p-4 pb-0 transition-all duration-500 ease-in-out">
+      <div className="relative flex flex-1 flex-col p-4 pb-0 transition-all duration-500 ease-in-out">
         <Header isSidebarOpen={isSidebarOpen} openSidebar={openSidebar} />
 
         <main
@@ -47,8 +53,17 @@ export default function App() {
             setMessages={setMessages}
             isLoadingAssistantMessage={isLoadingAssistantMessage}
             setIsLoadingAssistantMessage={setIsLoadingAssistantMessage}
+            clearErrorMessage={clearErrorMessage}
+            updateErrorMessage={updateErrorMessage}
           />
         </main>
+
+        <Alert
+          message={errorMessage}
+          clearMessage={clearErrorMessage}
+          variant="error"
+          className="absolute top-0 right-0 left-0 z-50 mx-4 mt-18 w-auto sm:mx-auto sm:w-[90%] md:w-[80%] lg:w-[70%]"
+        />
       </div>
     </div>
   );

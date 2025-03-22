@@ -1,5 +1,5 @@
 import { PanelLeft, Settings } from 'lucide-react';
-import Button from './Button';
+import Button from './ui/Button';
 
 interface HeaderProps {
   isSidebarOpen: boolean;
@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export default function Header({ isSidebarOpen, openSidebar }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between">
+    <header className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
         {!isSidebarOpen && (
           <Button onClick={openSidebar}>

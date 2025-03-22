@@ -5,21 +5,27 @@ import clsx from 'clsx';
 interface SidebarProps {
   isSidebarOpen: boolean;
   closeSidebar: () => void;
+  children: React.ReactNode;
 }
 
-export default function Sidebar({ isSidebarOpen, closeSidebar }: SidebarProps) {
+export default function Sidebar({
+  isSidebarOpen,
+  closeSidebar,
+  children,
+}: SidebarProps) {
   return (
     <aside
       className={clsx(
-        'h-full overflow-hidden bg-neutral-100 transition-all duration-500 ease-in-out dark:bg-neutral-900',
+        'h-full overflow-hidden bg-neutral-100 p-4 transition-all duration-500 ease-in-out dark:bg-neutral-900',
         isSidebarOpen ? 'w-80' : 'w-0',
       )}
     >
-      <div className="p-4">
+      <div>
         <Button onClick={() => closeSidebar()}>
           <PanelLeft />
         </Button>
       </div>
+      {children}
     </aside>
   );
 }

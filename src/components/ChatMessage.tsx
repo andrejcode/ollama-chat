@@ -1,10 +1,10 @@
 import { Copy, Check, X } from 'lucide-react';
-import Button from './Button';
+import Button from './ui/Button';
 import { Message } from '@shared/types';
 import clsx from 'clsx';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useState, useEffect } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from './ui/LoadingSpinner';
 
 type CopyStatus = 'idle' | 'copied' | 'error';
 
@@ -68,10 +68,13 @@ export default function ChatMessage({
     >
       {message.role === 'user' ? (
         <div>{message.content}</div>
-      ) : isLoadingAssistantMessage ? (
-        <LoadingSpinner isLoading={isLoadingAssistantMessage} />
       ) : (
-        <MarkdownRenderer content={message.content} />
+        <>
+          <LoadingSpinner isLoading={!!isLoadingAssistantMessage} />
+          {!isLoadingAssistantMessage && (
+            <MarkdownRenderer content={message.content} />
+          )}
+        </>
       )}
 
       <Button
