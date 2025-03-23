@@ -1,4 +1,4 @@
-import { OllamaStreamResponse } from '@shared/types';
+import { OllamaStreamResponse } from './types';
 
 /**
  * Reads a stream and processes NDJSON by accumulating chunks into a buffer,

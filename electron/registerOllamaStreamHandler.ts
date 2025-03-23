@@ -1,4 +1,5 @@
-import type { Message, OllamaStreamResponse } from '@shared/types';
+import type { OllamaStreamResponse } from './types';
+import type { Message } from '@shared/types';
 import { ipcMain } from 'electron';
 import { wrapAsync } from '@shared/utils';
 import { processNDJSONStream } from './utils';
