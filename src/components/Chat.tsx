@@ -1,5 +1,6 @@
 import type { Message } from '@shared/types';
 import ChatMessage from './ChatMessage';
+import { getLastAssistantMessageIndex } from '@/utils';
 
 interface ChatProps {
   messages: Message[];
@@ -10,11 +11,6 @@ export default function Chat({
   messages,
   isLoadingAssistantMessage,
 }: ChatProps) {
-  const lastAssistantMessageIndex =
-    messages.length > 0
-      ? messages.map((message) => message.role).lastIndexOf('assistant')
-      : -1;
-
   return (
     <div className="h-full w-full overflow-auto">
       <section
@@ -27,7 +23,9 @@ export default function Chat({
           if (message.role === 'user') {
             return <ChatMessage key={message.id} message={message} />;
           } else if (message.role === 'assistant') {
-            const isLastAssistantMessage = index === lastAssistantMessageIndex;
+            const isLastAssistantMessage =
+              index === getLastAssistantMessageIndex(messages);
+
             return (
               <ChatMessage
                 key={message.id}
