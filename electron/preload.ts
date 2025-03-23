@@ -12,9 +12,11 @@ const electronApi: ElectronApi = {
     return () =>
       ipcRenderer.removeListener('ollama-stream-response', boundCallback);
   },
-  onStreamError: (callback: (error: string) => void) => {
-    const boundCallback = (_event: Electron.IpcRendererEvent, error: string) =>
-      callback(error);
+  onStreamError: (callback: (errorMessage: string) => void) => {
+    const boundCallback = (
+      _event: Electron.IpcRendererEvent,
+      errorMessage: string,
+    ) => callback(errorMessage);
     ipcRenderer.once('ollama-stream-error', boundCallback);
   },
   onStreamComplete: (callback: () => void) => {

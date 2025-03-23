@@ -2,26 +2,7 @@ import type { Message, OllamaStreamResponse } from '@shared/types';
 import { ipcMain } from 'electron';
 import { wrapAsync } from '@shared/utils';
 import { processNDJSONStream } from './utils';
-
-async function fetchChatStream(
-  messages: Message[],
-): Promise<ReadableStreamDefaultReader<Uint8Array>> {
-  const chatResponse = await fetch('http://localhost:11434/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'gemma2:latest',
-      messages: messages.map(({ role, content }) => ({ role, content })),
-      stream: true,
-    }),
-  });
-
-  if (!chatResponse.body) {
-    throw new Error('No response body received');
-  }
-
-  return chatResponse.body.getReader();
-}
+import { fetchChatStream } from './api';
 
 export default function registerOllamaStreamHandler() {
   ipcMain.on(
@@ -40,16 +21,16 @@ export default function registerOllamaStreamHandler() {
               );
             }
           },
-          (errorMessage: string) => {
+          (errorMessage) => {
             event.sender.send('ollama-stream-error', errorMessage);
           },
           () => {
             event.sender.send('ollama-stream-complete');
           },
         );
-      } catch (error) {
+      } catch {
         const errorMessage =
-          error instanceof Error ? error.message : String(error);
+          'Unable to connect to Ollama. Please check that the Ollama app is running on your computer and try again. If the problem persists, try restarting Ollama.';
         event.sender.send('ollama-stream-error', errorMessage);
       }
     }),
