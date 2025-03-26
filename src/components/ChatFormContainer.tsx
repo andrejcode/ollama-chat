@@ -1,68 +1,61 @@
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@shared/types';
 import ChatForm from './ChatForm';
 import WelcomeTitle from './WelcomeTitle';
+import { generateUniqueId } from '@/utils';
+import useMessageContext from '@/hooks/useMessageContext';
 
 interface ChatFormContainerProps {
   isChatStarted: boolean;
-  setIsChatStarted: React.Dispatch<React.SetStateAction<boolean>>;
-  messages: Message[];
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  isLoadingAssistantMessage: boolean;
-  setIsLoadingAssistantMessage: React.Dispatch<React.SetStateAction<boolean>>;
+  startChat: () => void;
   clearErrorMessage: () => void;
   updateErrorMessage: (message: string) => void;
 }
 
 export default function ChatFormContainer({
   isChatStarted,
-  setIsChatStarted,
-  messages,
-  setMessages,
-  isLoadingAssistantMessage,
-  setIsLoadingAssistantMessage,
+  startChat,
   clearErrorMessage,
   updateErrorMessage,
 }: ChatFormContainerProps) {
   const [userInput, setUserInput] = useState<string>('');
   const [isStreamComplete, setIsStreamComplete] = useState<boolean>(true);
 
+  const {
+    messages,
+    addEmptyAssistantMessage,
+    updateAssistantMessage,
+    addUserMessage,
+    isLoadingAssistantMessage,
+    startLoadingAssistantMessage,
+    stopLoadingAssistantMessage,
+  } = useMessageContext();
+
   const sendPromptToOllama = (messagesToSend: Message[]) => {
     clearErrorMessage();
-    setIsLoadingAssistantMessage(true);
+    startLoadingAssistantMessage();
     setIsStreamComplete(false);
 
     window.electronApi.sendPrompt(messagesToSend);
 
     let firstChunkReceived = false;
-    const messageId = uuidv4();
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { id: messageId, role: 'assistant', content: '' },
-    ]);
+    const assistantMessageId = generateUniqueId();
+    addEmptyAssistantMessage(assistantMessageId);
 
     const handleStreamResponse = (chunk: string) => {
       if (!firstChunkReceived) {
-        setIsLoadingAssistantMessage(false);
+        stopLoadingAssistantMessage();
         firstChunkReceived = true;
       }
 
-      setMessages((prevMessages) =>
-        prevMessages.map((message) =>
-          message.id === messageId
-            ? { ...message, content: message.content + chunk }
-            : message,
-        ),
-      );
+      updateAssistantMessage(assistantMessageId, chunk);
     };
 
     const unsubscribe =
       window.electronApi.onStreamResponse(handleStreamResponse);
 
     window.electronApi.onStreamError((errorMessage: string) => {
-      setIsLoadingAssistantMessage(false);
+      stopLoadingAssistantMessage();
       updateErrorMessage(errorMessage);
       setIsStreamComplete(true);
 
@@ -79,13 +72,19 @@ export default function ChatFormContainer({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (userInput.trim()) {
-      const newMessage = { id: uuidv4(), role: 'user', content: userInput };
-      const newMessages = [...messages, newMessage];
-      setMessages(newMessages);
+      const userMessageId = generateUniqueId();
+      addUserMessage(userMessageId, userInput);
 
-      sendPromptToOllama(newMessages);
+      const newMessage = {
+        id: userMessageId,
+        role: 'user',
+        content: userInput,
+      };
+      const updatedMessages = [...messages, newMessage];
+
+      sendPromptToOllama(updatedMessages);
       setUserInput('');
-      setIsChatStarted(true);
+      startChat();
     }
   };
 

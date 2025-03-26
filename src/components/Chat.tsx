@@ -1,16 +1,10 @@
-import type { Message } from '@shared/types';
 import ChatMessage from './ChatMessage';
+import useMessageContext from '@/hooks/useMessageContext';
 import { getLastAssistantMessageIndex } from '@/utils';
 
-interface ChatProps {
-  messages: Message[];
-  isLoadingAssistantMessage: boolean;
-}
+export default function Chat() {
+  const { messages, isLoadingAssistantMessage } = useMessageContext();
 
-export default function Chat({
-  messages,
-  isLoadingAssistantMessage,
-}: ChatProps) {
   return (
     <div className="h-full w-full overflow-auto">
       <section

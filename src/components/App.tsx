@@ -1,29 +1,17 @@
-import { useState } from 'react';
 import clsx from 'clsx';
 import Sidebar from './ui/Sidebar';
 import Header from './Header';
 import Chat from './Chat';
 import ChatFormContainer from './ChatFormContainer';
-import type { Message } from '@shared/types';
 import Alert from './ui/Alert';
 import useError from '@/hooks/useError';
+import useSidebar from '@/hooks/useSidebar';
+import useChat from '@/hooks/useChat';
 
 export default function App() {
-  const [isChatStarted, setIsChatStarted] = useState<boolean>(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoadingAssistantMessage, setIsLoadingAssistantMessage] =
-    useState<boolean>(false);
-
+  const { isChatStarted, startChat } = useChat();
+  const { isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
   const { errorMessage, clearErrorMessage, updateErrorMessage } = useError();
-
-  const openSidebar = () => {
-    setIsSidebarOpen(true);
-  };
-
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
 
   return (
     <div className="flex h-screen bg-neutral-50 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100">
@@ -40,19 +28,10 @@ export default function App() {
             isChatStarted ? 'mt-0 translate-y-0' : 'mt-20 -translate-y-1/2',
           )}
         >
-          {isChatStarted && (
-            <Chat
-              messages={messages}
-              isLoadingAssistantMessage={isLoadingAssistantMessage}
-            />
-          )}
+          {isChatStarted && <Chat />}
           <ChatFormContainer
             isChatStarted={isChatStarted}
-            setIsChatStarted={setIsChatStarted}
-            messages={messages}
-            setMessages={setMessages}
-            isLoadingAssistantMessage={isLoadingAssistantMessage}
-            setIsLoadingAssistantMessage={setIsLoadingAssistantMessage}
+            startChat={startChat}
             clearErrorMessage={clearErrorMessage}
             updateErrorMessage={updateErrorMessage}
           />
