@@ -77,6 +77,7 @@ export default function ChatForm({
     <form
       className="mb-4 flex w-full items-center justify-between rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow dark:border-none dark:bg-neutral-700"
       onSubmit={onSubmit}
+      data-testid="chat-form"
     >
       <textarea
         ref={textareaRef}

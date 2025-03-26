@@ -24,6 +24,7 @@ export default function WelcomeTitle({
           'mb-4 self-start text-2xl transition-opacity duration-500 ease-out sm:text-3xl md:text-4xl',
           isChatStarted ? 'opacity-0' : 'opacity-100',
         )}
+        data-testid="welcome-title"
       >
         Welcome to OllamaChat
       </h1>
