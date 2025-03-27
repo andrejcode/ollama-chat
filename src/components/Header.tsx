@@ -8,10 +8,10 @@ interface HeaderProps {
 
 export default function Header({ isSidebarOpen, openSidebar }: HeaderProps) {
   return (
-    <header className="mb-4 flex items-center justify-between">
+    <header className="z-10 mb-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
         {!isSidebarOpen && (
-          <Button onClick={openSidebar}>
+          <Button onClick={() => openSidebar()}>
             <PanelLeft />
           </Button>
         )}
