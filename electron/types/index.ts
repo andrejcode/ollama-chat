@@ -26,3 +26,12 @@ interface OllamaStreamFinalResponse extends BaseOllamaStreamResponse {
 export type OllamaStreamResponse =
   | OllamaStreamResponsePartial
   | OllamaStreamFinalResponse;
+
+export enum IpcChannels {
+  OLLAMA_STREAM = 'ollama-stream',
+  OLLAMA_RESPONSE = 'ollama-stream-response',
+  OLLAMA_ERROR = 'ollama-stream-error',
+  OLLAMA_COMPLETE = 'ollama-stream-complete',
+  STORE_GET = 'store-get',
+  STORE_SET = 'store-set',
+}
