@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import ChatMessage from '../ChatMessage';
 import type { Message } from '@shared/types';
@@ -153,7 +153,9 @@ describe('ChatMessage component', () => {
     });
     fireEvent.click(copyButton);
 
-    await vi.runAllTimersAsync();
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
 
     expect(copyButton).toBeInTheDocument();
 

@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ChatFormContainer from '../ChatFormContainer';
 import useMessageContext from '@/hooks/useMessageContext';
 import { generateUniqueId } from '@/utils';
+import { act } from 'react';
 
 vi.mock('@/hooks/useMessageContext');
 vi.mock('@/utils', () => ({
@@ -29,6 +30,8 @@ describe('ChatFormContainer', () => {
     onStreamResponse: vi.fn(),
     onStreamError: vi.fn(),
     onStreamComplete: vi.fn(),
+    getStoreValue: vi.fn(),
+    setStoreValue: vi.fn(),
   };
 
   beforeEach(() => {
@@ -142,14 +145,20 @@ describe('ChatFormContainer', () => {
     const form = screen.getByTestId('chat-form');
     fireEvent.submit(form);
 
-    capturedStreamHandler('First chunk');
+    act(() => {
+      capturedStreamHandler('First chunk');
+    });
+
     expect(mockMessageContext.stopLoadingAssistantMessage).toHaveBeenCalled();
     expect(mockMessageContext.updateAssistantMessage).toHaveBeenCalledWith(
       'assistant-id',
       'First chunk',
     );
 
-    capturedStreamHandler(' and second chunk');
+    act(() => {
+      capturedStreamHandler(' and second chunk');
+    });
+
     expect(mockMessageContext.updateAssistantMessage).toHaveBeenCalledWith(
       'assistant-id',
       ' and second chunk',
@@ -179,7 +188,9 @@ describe('ChatFormContainer', () => {
     const form = screen.getByTestId('chat-form');
     fireEvent.submit(form);
 
-    capturedErrorHandler('Connection error');
+    act(() => {
+      capturedErrorHandler('Connection error');
+    });
 
     expect(mockMessageContext.stopLoadingAssistantMessage).toHaveBeenCalled();
     expect(mockUpdateErrorMessage).toHaveBeenCalledWith('Connection error');
