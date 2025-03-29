@@ -1,12 +1,10 @@
 import { PanelLeft, Settings } from 'lucide-react';
 import Button from './ui/Button';
+import useSidebarContext from '@/hooks/useSidebarContext';
 
-interface HeaderProps {
-  isSidebarOpen: boolean;
-  openSidebar: () => void;
-}
+export default function Header() {
+  const { isSidebarOpen, openSidebar } = useSidebarContext();
 
-export default function Header({ isSidebarOpen, openSidebar }: HeaderProps) {
   return (
     <header className="z-10 mb-4 flex items-center justify-between">
       <div className="flex items-center gap-4">

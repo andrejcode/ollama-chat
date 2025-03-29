@@ -1,18 +1,11 @@
 import { PanelLeft } from 'lucide-react';
 import Button from './Button';
 import clsx from 'clsx';
+import useSidebarContext from '@/hooks/useSidebarContext';
 
-interface SidebarProps {
-  isSidebarOpen: boolean;
-  closeSidebar: () => void;
-  children: React.ReactNode;
-}
+export default function Sidebar() {
+  const { isSidebarOpen, closeSidebar } = useSidebarContext();
 
-export default function Sidebar({
-  isSidebarOpen,
-  closeSidebar,
-  children,
-}: SidebarProps) {
   return (
     <aside
       className={clsx(
@@ -25,7 +18,6 @@ export default function Sidebar({
           <PanelLeft />
         </Button>
       </div>
-      {children}
     </aside>
   );
 }

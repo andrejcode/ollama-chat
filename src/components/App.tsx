@@ -5,22 +5,18 @@ import Chat from './Chat';
 import ChatFormContainer from './ChatFormContainer';
 import Alert from './ui/Alert';
 import useError from '@/hooks/useError';
-import useSidebar from '@/hooks/useSidebar';
 import useChat from '@/hooks/useChat';
 
 export default function App() {
   const { isChatStarted, startChat } = useChat();
-  const { isSidebarOpen, openSidebar, closeSidebar } = useSidebar();
   const { errorMessage, clearErrorMessage, updateErrorMessage } = useError();
 
   return (
     <div className="flex h-screen bg-neutral-50 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100">
-      <Sidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar}>
-        {''}
-      </Sidebar>
+      <Sidebar />
 
       <div className="relative flex flex-1 flex-col p-4 pb-0 transition-all duration-500 ease-in-out">
-        <Header isSidebarOpen={isSidebarOpen} openSidebar={openSidebar} />
+        <Header />
 
         <main
           className={clsx(
