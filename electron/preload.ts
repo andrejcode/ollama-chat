@@ -23,6 +23,11 @@ const electronApi: ElectronApi = {
     const boundCallback = () => callback();
     ipcRenderer.once('ollama-stream-complete', boundCallback);
   },
+
+  getStoreValue: <T>(key: string) =>
+    ipcRenderer.invoke('store-get', key) as Promise<T>,
+  setStoreValue: (key: string, value: unknown) =>
+    ipcRenderer.invoke('store-set', key, value),
 };
 
 contextBridge.exposeInMainWorld('electronApi', electronApi);

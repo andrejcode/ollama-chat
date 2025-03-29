@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import createWindow from './createWindow';
 import registerOllamaStreamHandler from './registerOllamaStreamHandler';
+import registerStoreHandlers from './registerStoreHandlers';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let win: BrowserWindow | null;
@@ -26,4 +27,5 @@ app.on('activate', () => {
 void app.whenReady().then(() => {
   win = createWindow();
   registerOllamaStreamHandler();
+  registerStoreHandlers();
 });
