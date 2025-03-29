@@ -32,6 +32,7 @@ export enum IpcChannels {
   OLLAMA_RESPONSE = 'ollama-stream-response',
   OLLAMA_ERROR = 'ollama-stream-error',
   OLLAMA_COMPLETE = 'ollama-stream-complete',
+
   STORE_GET = 'store-get',
   STORE_SET = 'store-set',
 }

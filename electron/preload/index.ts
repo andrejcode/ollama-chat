@@ -1,33 +1,34 @@
 import { ipcRenderer, contextBridge } from 'electron';
 import type { ElectronApi, Message } from '@shared/types';
+import { IpcChannels } from '@electron/types';
 
 const electronApi: ElectronApi = {
   sendPrompt: (messages: Message[]) =>
-    ipcRenderer.send('ollama-stream', messages),
+    ipcRenderer.send(IpcChannels.OLLAMA_STREAM, messages),
   onStreamResponse: (callback: (data: string) => void) => {
     const boundCallback = (_event: Electron.IpcRendererEvent, data: string) =>
       callback(data);
-    ipcRenderer.on('ollama-stream-response', boundCallback);
+    ipcRenderer.on(IpcChannels.OLLAMA_RESPONSE, boundCallback);
 
     return () =>
-      ipcRenderer.removeListener('ollama-stream-response', boundCallback);
+      ipcRenderer.removeListener(IpcChannels.OLLAMA_RESPONSE, boundCallback);
   },
   onStreamError: (callback: (errorMessage: string) => void) => {
     const boundCallback = (
       _event: Electron.IpcRendererEvent,
       errorMessage: string,
     ) => callback(errorMessage);
-    ipcRenderer.once('ollama-stream-error', boundCallback);
+    ipcRenderer.once(IpcChannels.OLLAMA_ERROR, boundCallback);
   },
   onStreamComplete: (callback: () => void) => {
     const boundCallback = () => callback();
-    ipcRenderer.once('ollama-stream-complete', boundCallback);
+    ipcRenderer.once(IpcChannels.OLLAMA_COMPLETE, boundCallback);
   },
 
   getStoreValue: <T>(key: string) =>
-    ipcRenderer.invoke('store-get', key) as Promise<T>,
+    ipcRenderer.invoke(IpcChannels.STORE_GET, key) as Promise<T>,
   setStoreValue: (key: string, value: unknown) =>
-    ipcRenderer.invoke('store-set', key, value),
+    ipcRenderer.invoke(IpcChannels.STORE_SET, key, value),
 };
 
 contextBridge.exposeInMainWorld('electronApi', electronApi);
