@@ -17,6 +17,13 @@ export default defineConfig({
         // Shortcut of `build.lib.entry`.
         entry: 'electron/main/index.ts',
         vite: {
+          build: {
+            rollupOptions: {
+              output: {
+                entryFileNames: 'main.js',
+              },
+            },
+          },
           resolve: {
             alias: {
               '@electron': path.resolve(__dirname, 'electron'),
@@ -30,6 +37,13 @@ export default defineConfig({
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: path.join(__dirname, 'electron/preload/index.ts'),
         vite: {
+          build: {
+            rollupOptions: {
+              output: {
+                entryFileNames: 'preload.mjs',
+              },
+            },
+          },
           resolve: {
             alias: {
               '@electron': path.resolve(__dirname, 'electron'),
