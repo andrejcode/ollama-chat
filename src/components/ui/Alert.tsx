@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 interface AlertProps {
   message: string | null;
-  clearMessage: () => void;
+  onDismiss: () => void;
   variant: 'error' | 'success';
   className?: string;
 }
@@ -13,7 +13,7 @@ export default function Alert({
   message,
   variant,
   className,
-  clearMessage,
+  onDismiss,
 }: AlertProps) {
   const [showAlert, setShowAlert] = useState<boolean>(true);
   const [fadeClass, setFadeClass] = useState<'opacity-0' | 'opacity-100'>(
@@ -36,16 +36,28 @@ export default function Alert({
     setFadeClass('opacity-0');
 
     setTimeout(() => {
-      clearMessage();
+      onDismiss();
       setShowAlert(false);
     }, 500);
   };
 
   const renderIcon = () => {
     if (variant === 'error') {
-      return <XCircle className="mr-2 text-red-800" />;
+      return (
+        <XCircle
+          className="text-red-800"
+          aria-label="Error"
+          data-testid="error-icon"
+        />
+      );
     } else {
-      return <CheckCircle className="mr-2 text-green-800" />;
+      return (
+        <CheckCircle
+          className="text-green-800"
+          aria-label="Success"
+          data-testid="success-icon"
+        />
+      );
     }
   };
 

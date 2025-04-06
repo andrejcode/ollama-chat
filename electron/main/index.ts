@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import createWindow from './window';
 import { registerOllamaHandlers } from '../ollama';
 import { registerStoreHandlers } from '../store';
+import { initializeTheme, registerThemeHandlers } from './theme';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let win: BrowserWindow | null;
@@ -27,6 +28,9 @@ app.on('activate', () => {
 void app.whenReady().then(() => {
   win = createWindow();
 
+  initializeTheme();
+
+  registerThemeHandlers();
   registerOllamaHandlers();
   registerStoreHandlers();
 });

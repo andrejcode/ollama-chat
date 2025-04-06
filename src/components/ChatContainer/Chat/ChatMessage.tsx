@@ -1,10 +1,10 @@
-import { Copy, Check, X } from 'lucide-react';
-import Button from './ui/Button';
-import { Message } from '@shared/types';
 import clsx from 'clsx';
-import MarkdownRenderer from './MarkdownRenderer';
 import { useState, useEffect } from 'react';
-import LoadingSpinner from './ui/LoadingSpinner';
+import { Copy, Check, X } from 'lucide-react';
+import Button from '@/components/ui/Button';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import MarkdownRenderer from './MarkdownRenderer';
+import { Message } from '@shared/types';
 
 type CopyStatus = 'idle' | 'copied' | 'error';
 

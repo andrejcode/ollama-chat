@@ -5,6 +5,7 @@ import { IpcChannels } from '@electron/types';
 
 const defaults: StoreSchema = {
   isSidebarOpen: true,
+  theme: 'system',
 };
 
 const store = new Store<StoreSchema>({

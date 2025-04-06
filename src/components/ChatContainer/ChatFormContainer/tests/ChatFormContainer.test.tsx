@@ -1,19 +1,32 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import ChatFormContainer from '../ChatFormContainer';
+import AlertMessageProvider from '@/providers/AlertMessageProvider';
+import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
 import useMessageContext from '@/hooks/useMessageContext';
+import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 import { generateUniqueId } from '@/utils';
 import { act } from 'react';
+import { createMockElectronApi } from '@/tests/utils/mocks';
 
 vi.mock('@/hooks/useMessageContext');
+vi.mock('@/hooks/useAlertMessageContext');
 vi.mock('@/utils', () => ({
   generateUniqueId: vi.fn(),
 }));
 
-describe('ChatFormContainer', () => {
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <AlertMessageProvider>{children}</AlertMessageProvider>;
+};
+
+describe('ChatFormContainer component', () => {
   const mockStartChat = vi.fn();
-  const mockClearErrorMessage = vi.fn();
-  const mockUpdateErrorMessage = vi.fn();
+  let mockElectronApi: ReturnType<typeof createMockElectronApi>;
+
+  const mockAlertMessageContext = {
+    alertMessage: null,
+    updateAlertMessage: vi.fn(),
+    clearAlertMessage: vi.fn(),
+  };
 
   const mockMessageContext = {
     messages: [],
@@ -25,18 +38,11 @@ describe('ChatFormContainer', () => {
     stopLoadingAssistantMessage: vi.fn(),
   };
 
-  const mockElectronApi = {
-    sendPrompt: vi.fn(),
-    onStreamResponse: vi.fn(),
-    onStreamError: vi.fn(),
-    onStreamComplete: vi.fn(),
-    getStoreValue: vi.fn(),
-    setStoreValue: vi.fn(),
-  };
-
   beforeEach(() => {
     vi.mocked(useMessageContext).mockReturnValue(mockMessageContext);
+    vi.mocked(useAlertMessageContext).mockReturnValue(mockAlertMessageContext);
 
+    mockElectronApi = createMockElectronApi();
     window.electronApi = mockElectronApi;
 
     vi.mocked(generateUniqueId)
@@ -52,12 +58,8 @@ describe('ChatFormContainer', () => {
 
   it('renders ChatForm and WelcomeTitle with correct props', () => {
     render(
-      <ChatFormContainer
-        isChatStarted={false}
-        startChat={mockStartChat}
-        clearErrorMessage={mockClearErrorMessage}
-        updateErrorMessage={mockUpdateErrorMessage}
-      />,
+      <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
+      { wrapper: TestWrapper },
     );
 
     const welcomeTitle = screen.getByTestId('welcome-title');
@@ -72,12 +74,8 @@ describe('ChatFormContainer', () => {
     mockElectronApi.onStreamResponse.mockReturnValue(mockUnsubscribe);
 
     render(
-      <ChatFormContainer
-        isChatStarted={false}
-        startChat={mockStartChat}
-        clearErrorMessage={mockClearErrorMessage}
-        updateErrorMessage={mockUpdateErrorMessage}
-      />,
+      <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
+      { wrapper: TestWrapper },
     );
 
     const textArea = screen.getByRole('textbox');
@@ -86,7 +84,7 @@ describe('ChatFormContainer', () => {
     const form = screen.getByTestId('chat-form');
     fireEvent.submit(form);
 
-    expect(mockClearErrorMessage).toHaveBeenCalled();
+    expect(mockAlertMessageContext.clearAlertMessage).toHaveBeenCalled();
     expect(mockMessageContext.addUserMessage).toHaveBeenCalledWith(
       'user-id',
       'Hello, Ollama!',
@@ -104,12 +102,8 @@ describe('ChatFormContainer', () => {
 
   it('handles empty user input correctly', () => {
     render(
-      <ChatFormContainer
-        isChatStarted={false}
-        startChat={mockStartChat}
-        clearErrorMessage={mockClearErrorMessage}
-        updateErrorMessage={mockUpdateErrorMessage}
-      />,
+      <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
+      { wrapper: TestWrapper },
     );
 
     const form = screen.getByTestId('chat-form');
@@ -132,12 +126,8 @@ describe('ChatFormContainer', () => {
     );
 
     render(
-      <ChatFormContainer
-        isChatStarted={false}
-        startChat={mockStartChat}
-        clearErrorMessage={mockClearErrorMessage}
-        updateErrorMessage={mockUpdateErrorMessage}
-      />,
+      <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
+      { wrapper: TestWrapper },
     );
 
     const textArea = screen.getByRole('textbox');
@@ -175,12 +165,8 @@ describe('ChatFormContainer', () => {
     });
 
     render(
-      <ChatFormContainer
-        isChatStarted={false}
-        startChat={mockStartChat}
-        clearErrorMessage={mockClearErrorMessage}
-        updateErrorMessage={mockUpdateErrorMessage}
-      />,
+      <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
+      { wrapper: TestWrapper },
     );
 
     const textArea = screen.getByRole('textbox');
@@ -193,7 +179,10 @@ describe('ChatFormContainer', () => {
     });
 
     expect(mockMessageContext.stopLoadingAssistantMessage).toHaveBeenCalled();
-    expect(mockUpdateErrorMessage).toHaveBeenCalledWith('Connection error');
+    expect(mockAlertMessageContext.updateAlertMessage).toHaveBeenCalledWith({
+      message: 'Connection error',
+      type: 'error',
+    });
     expect(mockUnsubscribe).toHaveBeenCalled();
   });
 });

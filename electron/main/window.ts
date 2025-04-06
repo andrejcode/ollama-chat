@@ -17,9 +17,13 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 
 export default function createWindow() {
   const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
       backgroundThrottling: false,
+      contextIsolation: true,
+      nodeIntegration: false,
     },
   });
 

@@ -81,7 +81,7 @@ export default function ChatForm({
     >
       <textarea
         ref={textareaRef}
-        className="'mr-4 max-h-[200px] w-full resize-none overflow-y-auto focus:outline-none"
+        className="'mr-4 max-h-[200px] w-full resize-none overflow-y-auto text-neutral-800 focus:outline-none dark:text-neutral-100"
         placeholder="Ask anything"
         value={userInput}
         onChange={onChange}

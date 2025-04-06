@@ -25,6 +25,10 @@ const electronApi: ElectronApi = {
     ipcRenderer.once(IpcChannels.OLLAMA_COMPLETE, boundCallback);
   },
 
+  setThemeDark: () => ipcRenderer.invoke(IpcChannels.THEME_DARK),
+  setThemeLight: () => ipcRenderer.invoke(IpcChannels.THEME_LIGHT),
+  setThemeSystem: () => ipcRenderer.invoke(IpcChannels.THEME_SYSTEM),
+
   getStoreValue: <T>(key: string) =>
     ipcRenderer.invoke(IpcChannels.STORE_GET, key) as Promise<T>,
   setStoreValue: (key: string, value: unknown) =>

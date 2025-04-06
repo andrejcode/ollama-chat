@@ -4,22 +4,24 @@ import ChatForm from './ChatForm';
 import WelcomeTitle from './WelcomeTitle';
 import { generateUniqueId } from '@/utils';
 import useMessageContext from '@/hooks/useMessageContext';
+import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 
 interface ChatFormContainerProps {
   isChatStarted: boolean;
-  startChat: () => void;
-  clearErrorMessage: () => void;
-  updateErrorMessage: (message: string) => void;
+  onChatStart: () => void;
 }
 
 export default function ChatFormContainer({
   isChatStarted,
-  startChat,
-  clearErrorMessage,
-  updateErrorMessage,
+  onChatStart,
 }: ChatFormContainerProps) {
   const [userInput, setUserInput] = useState<string>('');
   const [isStreamComplete, setIsStreamComplete] = useState<boolean>(true);
+
+  const {
+    updateAlertMessage: updateErrorMessage,
+    clearAlertMessage: clearErrorMessage,
+  } = useAlertMessageContext();
 
   const {
     messages,
@@ -56,7 +58,7 @@ export default function ChatFormContainer({
 
     window.electronApi.onStreamError((errorMessage: string) => {
       stopLoadingAssistantMessage();
-      updateErrorMessage(errorMessage);
+      updateErrorMessage({ message: errorMessage, type: 'error' });
       setIsStreamComplete(true);
 
       unsubscribe();
@@ -84,7 +86,7 @@ export default function ChatFormContainer({
 
       sendPromptToOllama(updatedMessages);
       setUserInput('');
-      startChat();
+      onChatStart();
     }
   };
 

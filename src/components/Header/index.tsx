@@ -1,6 +1,7 @@
-import { PanelLeft, Settings } from 'lucide-react';
-import Button from './ui/Button';
+import { PanelLeft } from 'lucide-react';
+import Button from '../ui/Button';
 import useSidebarContext from '@/hooks/useSidebarContext';
+import SettingsButton from './SettingsButton';
 
 export default function Header() {
   const { isSidebarOpen, openSidebar } = useSidebarContext();
@@ -13,11 +14,10 @@ export default function Header() {
             <PanelLeft />
           </Button>
         )}
-        <div>Model</div>
+        <div className="text-xl">Model</div>
       </div>
-      <Button>
-        <Settings />
-      </Button>
+
+      <SettingsButton />
     </header>
   );
 }
