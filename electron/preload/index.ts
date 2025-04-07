@@ -25,6 +25,10 @@ const electronApi: ElectronApi = {
     ipcRenderer.once(IpcChannels.OLLAMA_COMPLETE, boundCallback);
   },
 
+  setOllamaUrl: (url: string) =>
+    ipcRenderer.invoke(IpcChannels.OLLAMA_URL_CHANGE, url),
+  checkOllamaHealth: () => ipcRenderer.invoke(IpcChannels.OLLAMA_HEALTH_CHECK),
+
   setThemeDark: () => ipcRenderer.invoke(IpcChannels.THEME_DARK),
   setThemeLight: () => ipcRenderer.invoke(IpcChannels.THEME_LIGHT),
   setThemeSystem: () => ipcRenderer.invoke(IpcChannels.THEME_SYSTEM),

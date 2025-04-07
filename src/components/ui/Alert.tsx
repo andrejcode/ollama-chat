@@ -45,7 +45,7 @@ export default function Alert({
     if (variant === 'error') {
       return (
         <XCircle
-          className="text-red-800"
+          className="mr-2 text-red-800"
           aria-label="Error"
           data-testid="error-icon"
         />
@@ -53,7 +53,7 @@ export default function Alert({
     } else {
       return (
         <CheckCircle
-          className="text-green-800"
+          className="mr-2 text-green-800"
           aria-label="Success"
           data-testid="success-icon"
         />

@@ -3,10 +3,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import SettingsModal from '../SettingsModal';
 import useSettingsModalContext from '@/hooks/useSettingsModalContext';
 import { createMockElectronApi } from '@/tests/utils/mocks';
+import AlertMessageProvider from '@/providers/AlertMessageProvider';
 
 vi.mock('@/hooks/useSettingsModalContext', () => ({
   default: vi.fn(),
 }));
+
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <AlertMessageProvider>{children}</AlertMessageProvider>;
+};
 
 describe('SettingsModal component', () => {
   const mockCloseModal = vi.fn();
@@ -37,7 +42,7 @@ describe('SettingsModal component', () => {
   });
 
   it('renders the modal when isOpen is true', () => {
-    render(<SettingsModal />);
+    render(<SettingsModal />, { wrapper: TestWrapper });
 
     expect(screen.getByText('Settings')).toBeInTheDocument();
     expect(screen.getByText('Theme')).toBeInTheDocument();
@@ -53,12 +58,12 @@ describe('SettingsModal component', () => {
       openModal: vi.fn(),
     });
 
-    render(<SettingsModal />);
+    render(<SettingsModal />, { wrapper: TestWrapper });
     expect(screen.queryByText('Settings')).not.toBeInTheDocument();
   });
 
   it('calls setThemeDark when Dark button is clicked', () => {
-    render(<SettingsModal />);
+    render(<SettingsModal />, { wrapper: TestWrapper });
 
     const darkButton = screen.getByText('Dark');
     fireEvent.click(darkButton);
@@ -67,7 +72,7 @@ describe('SettingsModal component', () => {
   });
 
   it('calls setThemeLight when Light button is clicked', () => {
-    render(<SettingsModal />);
+    render(<SettingsModal />, { wrapper: TestWrapper });
 
     const lightButton = screen.getByText('Light');
     fireEvent.click(lightButton);
@@ -76,7 +81,7 @@ describe('SettingsModal component', () => {
   });
 
   it('calls setThemeSystem when System button is clicked', () => {
-    render(<SettingsModal />);
+    render(<SettingsModal />, { wrapper: TestWrapper });
 
     const systemButton = screen.getByText('System');
     fireEvent.click(systemButton);
@@ -85,7 +90,7 @@ describe('SettingsModal component', () => {
   });
 
   it('calls closeModal when the close button is clicked', () => {
-    render(<SettingsModal />);
+    render(<SettingsModal />, { wrapper: TestWrapper });
 
     const closeButton = screen.getByRole('button', { name: 'Close modal' });
     fireEvent.click(closeButton);

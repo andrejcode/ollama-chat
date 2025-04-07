@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import AlertMessageContext, {
   AlertMessage,
 } from '@/contexts/AlertMessageContext';
@@ -10,9 +10,9 @@ export default function AlertMessageProvider({
 }) {
   const [alertMessage, setAlertMessage] = useState<AlertMessage | null>(null);
 
-  const updateAlertMessage = (alertMessage: AlertMessage) => {
+  const updateAlertMessage = useCallback((alertMessage: AlertMessage) => {
     setAlertMessage(alertMessage);
-  };
+  }, []);
 
   const clearAlertMessage = () => {
     setAlertMessage(null);

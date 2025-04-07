@@ -1,9 +1,16 @@
+import { getStoreValue } from '@electron/store';
 import { Message } from '@shared/types';
 
 export async function fetchChatStream(
   messages: Message[],
 ): Promise<ReadableStreamDefaultReader<Uint8Array>> {
-  const chatResponse = await fetch('http://localhost:11434/api/chat', {
+  const ollamaUrl = getStoreValue('ollamaUrl');
+
+  if (!ollamaUrl) {
+    throw new Error('Ollama URL is not set');
+  }
+
+  const chatResponse = await fetch(`${ollamaUrl}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

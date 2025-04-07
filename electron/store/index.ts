@@ -6,6 +6,7 @@ import { IpcChannels } from '@electron/types';
 const defaults: StoreSchema = {
   isSidebarOpen: true,
   theme: 'system',
+  ollamaUrl: 'http://localhost:11434',
 };
 
 const store = new Store<StoreSchema>({

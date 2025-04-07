@@ -1,8 +1,10 @@
-import useSettingsModalContext from '@/hooks/useSettingsModalContext';
 import Modal from './ui/Modal';
+import useSettingsModalContext from '@/hooks/useSettingsModalContext';
+import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 
 export default function SettingsModal() {
   const { isOpen, closeModal } = useSettingsModalContext();
+  const { updateAlertMessage } = useAlertMessageContext();
 
   const setThemeDark = async () => {
     await window.electronApi.setThemeDark();
@@ -16,6 +18,25 @@ export default function SettingsModal() {
     await window.electronApi.setThemeSystem();
   };
 
+  // TODO: Add Ollama URL input
+  const updateOllamaUrl = async (url: string) => {
+    await window.electronApi.setOllamaUrl(url);
+
+    const status = await window.electronApi.checkOllamaHealth();
+
+    if (!status.ok) {
+      updateAlertMessage({
+        message: status.message,
+        type: 'error',
+      });
+    } else {
+      updateAlertMessage({
+        message: 'Ollama URL updated successfully.',
+        type: 'success',
+      });
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={closeModal} title="Settings">
       <div>
@@ -25,6 +46,11 @@ export default function SettingsModal() {
           <button onClick={() => void setThemeLight()}>Light</button>
           <button onClick={() => void setThemeSystem()}>System</button>
         </div>
+
+        <h3>Url</h3>
+        <button onClick={() => void updateOllamaUrl('http://localhost:11434')}>
+          Set Ollama URL
+        </button>
       </div>
     </Modal>
   );

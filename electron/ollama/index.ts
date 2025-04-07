@@ -4,6 +4,8 @@ import { ipcMain } from 'electron';
 import { wrapAsync } from '@shared/utils';
 import { processNDJSONStream } from '../utils';
 import { fetchChatStream } from './api';
+import { setStoreValue } from '@electron/store';
+import { checkOllamaHealth } from './health';
 
 export function registerOllamaHandlers() {
   ipcMain.on(
@@ -36,4 +38,13 @@ export function registerOllamaHandlers() {
       }
     }),
   );
+
+  ipcMain.handle(IpcChannels.OLLAMA_URL_CHANGE, (_event, url: string) => {
+    setStoreValue('ollamaUrl', url);
+    return true;
+  });
+
+  ipcMain.handle(IpcChannels.OLLAMA_HEALTH_CHECK, async () => {
+    return await checkOllamaHealth();
+  });
 }

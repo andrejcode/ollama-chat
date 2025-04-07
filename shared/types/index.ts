@@ -4,6 +4,9 @@ export interface ElectronApi {
   onStreamError: (callback: (error: string) => void) => void;
   onStreamComplete: (callback: () => void) => void;
 
+  setOllamaUrl: (url: string) => Promise<boolean>;
+  checkOllamaHealth: () => Promise<{ ok: boolean; message: string }>;
+
   setThemeDark: () => Promise<void>;
   setThemeLight: () => Promise<void>;
   setThemeSystem: () => Promise<void>;
@@ -17,6 +20,7 @@ type Theme = 'dark' | 'light' | 'system';
 export interface StoreSchema {
   isSidebarOpen: boolean;
   theme: Theme;
+  ollamaUrl: string;
 }
 
 export interface Message {

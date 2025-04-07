@@ -7,6 +7,9 @@ export function createMockElectronApi() {
     onStreamError: vi.fn(),
     onStreamComplete: vi.fn(),
 
+    setOllamaUrl: vi.fn(),
+    checkOllamaHealth: vi.fn(),
+
     setThemeDark: vi.fn(),
     setThemeLight: vi.fn(),
     setThemeSystem: vi.fn(),

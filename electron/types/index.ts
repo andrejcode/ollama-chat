@@ -33,6 +33,9 @@ export enum IpcChannels {
   OLLAMA_ERROR = 'ollama-stream-error',
   OLLAMA_COMPLETE = 'ollama-stream-complete',
 
+  OLLAMA_URL_CHANGE = 'ollama-url-change',
+  OLLAMA_HEALTH_CHECK = 'ollama-health-check',
+
   THEME_DARK = 'theme-dark',
   THEME_LIGHT = 'theme-light',
   THEME_SYSTEM = 'theme-system',

@@ -19,13 +19,13 @@ export default function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-40 flex items-center justify-center"
       onClick={onClose}
     >
       <div className="fixed inset-0 bg-neutral-900/50 dark:bg-neutral-900/80" />
 
       <div
-        className="z-50 w-2xl rounded-2xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-800 shadow-lg dark:border-none dark:bg-neutral-700 dark:text-neutral-100"
+        className="z-40 w-2xl rounded-2xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-800 shadow-lg dark:border-none dark:bg-neutral-700 dark:text-neutral-100"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between">
