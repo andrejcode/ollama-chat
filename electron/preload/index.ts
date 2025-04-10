@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge } from 'electron';
-import type { ElectronApi, Message } from '@shared/types';
+import type { Message, Model, ElectronApi } from '@shared/types';
 import { IpcChannels } from '@electron/types';
 
 const electronApi: ElectronApi = {
@@ -25,18 +25,67 @@ const electronApi: ElectronApi = {
     ipcRenderer.once(IpcChannels.OLLAMA_COMPLETE, boundCallback);
   },
 
+  getSidebarState: () => ipcRenderer.invoke(IpcChannels.GET_IS_SIDEBAR_OPEN),
+  setSidebarState: (isOpen: boolean) =>
+    ipcRenderer.invoke(IpcChannels.SET_IS_SIDEBAR_OPEN, isOpen),
+
   setOllamaUrl: (url: string) =>
     ipcRenderer.invoke(IpcChannels.OLLAMA_URL_CHANGE, url),
+
+  getHealthStatus: () => ipcRenderer.invoke(IpcChannels.OLLAMA_GET_HEALTH),
   checkOllamaHealth: () => ipcRenderer.invoke(IpcChannels.OLLAMA_HEALTH_CHECK),
+  onOllamaHealthStatus: (
+    callback: (status: { ok: boolean; message: string }) => void,
+  ) => {
+    const boundCallback = (
+      _event: Electron.IpcRendererEvent,
+      status: { ok: boolean; message: string },
+    ) => callback(status);
+    ipcRenderer.on(IpcChannels.OLLAMA_HEALTH_STATUS, boundCallback);
+
+    return () =>
+      ipcRenderer.removeListener(
+        IpcChannels.OLLAMA_HEALTH_STATUS,
+        boundCallback,
+      );
+  },
+
+  getModels: () => ipcRenderer.invoke(IpcChannels.OLLAMA_MODELS_GET),
+  onModelsUpdated: (callback: (models: Model[]) => void) => {
+    const boundCallback = (
+      _event: Electron.IpcRendererEvent,
+      models: Model[],
+    ) => callback(models);
+    ipcRenderer.on(IpcChannels.OLLAMA_MODELS_UPDATED, boundCallback);
+
+    return () =>
+      ipcRenderer.removeListener(
+        IpcChannels.OLLAMA_MODELS_UPDATED,
+        boundCallback,
+      );
+  },
+
+  getCurrentModel: () =>
+    ipcRenderer.invoke(IpcChannels.OLLAMA_GET_CURRENT_MODEL),
+  setCurrentModel: (modelName: string) =>
+    ipcRenderer.invoke(IpcChannels.OLLAMA_SET_CURRENT_MODEL, modelName),
+  onCurrentModelChanged: (callback: (modelName: string) => void) => {
+    const boundCallback = (
+      _event: Electron.IpcRendererEvent,
+      modelName: string,
+    ) => callback(modelName);
+    ipcRenderer.on(IpcChannels.OLLAMA_SET_CURRENT_MODEL, boundCallback);
+
+    return () =>
+      ipcRenderer.removeListener(
+        IpcChannels.OLLAMA_SET_CURRENT_MODEL,
+        boundCallback,
+      );
+  },
 
   setThemeDark: () => ipcRenderer.invoke(IpcChannels.THEME_DARK),
   setThemeLight: () => ipcRenderer.invoke(IpcChannels.THEME_LIGHT),
   setThemeSystem: () => ipcRenderer.invoke(IpcChannels.THEME_SYSTEM),
-
-  getStoreValue: <T>(key: string) =>
-    ipcRenderer.invoke(IpcChannels.STORE_GET, key) as Promise<T>,
-  setStoreValue: (key: string, value: unknown) =>
-    ipcRenderer.invoke(IpcChannels.STORE_SET, key, value),
 };
 
 contextBridge.exposeInMainWorld('electronApi', electronApi);

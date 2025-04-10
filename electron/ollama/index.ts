@@ -1,11 +1,11 @@
 import { IpcChannels, type OllamaStreamResponse } from '../types';
 import type { Message } from '@shared/types';
-import { ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { wrapAsync } from '@shared/utils';
 import { processNDJSONStream } from '../utils';
 import { fetchChatStream } from './api';
-import { setStoreValue } from '@electron/store';
-import { checkOllamaHealth } from './health';
+import { getStoreValue, setStoreValue } from '@electron/store';
+import { performHealthCheckAndUpdateModels } from './health';
 
 export function registerOllamaHandlers() {
   ipcMain.on(
@@ -39,12 +39,61 @@ export function registerOllamaHandlers() {
     }),
   );
 
-  ipcMain.handle(IpcChannels.OLLAMA_URL_CHANGE, (_event, url: string) => {
+  ipcMain.handle(IpcChannels.OLLAMA_URL_CHANGE, async (_event, url: string) => {
     setStoreValue('ollamaUrl', url);
-    return true;
+    return await performHealthCheckAndUpdateModels();
+  });
+
+  ipcMain.handle(IpcChannels.OLLAMA_GET_HEALTH, () => {
+    return getStoreValue('healthStatus');
   });
 
   ipcMain.handle(IpcChannels.OLLAMA_HEALTH_CHECK, async () => {
-    return await checkOllamaHealth();
+    return await performHealthCheckAndUpdateModels();
+  });
+
+  ipcMain.handle(IpcChannels.OLLAMA_MODELS_GET, () => {
+    return getStoreValue('models') || null;
+  });
+
+  ipcMain.handle(IpcChannels.OLLAMA_GET_CURRENT_MODEL, () => {
+    return getStoreValue('currentModel');
+  });
+
+  ipcMain.handle(
+    IpcChannels.OLLAMA_SET_CURRENT_MODEL,
+    (_event, modelName: string) => {
+      setStoreValue('currentModel', modelName);
+      return true;
+    },
+  );
+}
+
+export function initializeOllama(mainWindow: BrowserWindow) {
+  performHealthCheckAndUpdateModels(mainWindow)
+    .then((health) => {
+      console.log('Initial Ollama health check:', health.ok ? 'OK' : 'Failed');
+    })
+    .catch((error) => {
+      console.error('Error during initial Ollama health check:', error);
+    });
+
+  // Set up periodic health checks every 5 minutes
+  const checkInterval = setInterval(
+    () => {
+      if (mainWindow.isDestroyed()) {
+        clearInterval(checkInterval);
+        return;
+      }
+
+      performHealthCheckAndUpdateModels(mainWindow).catch((error) => {
+        console.error('Error during periodic Ollama health check:', error);
+      });
+    },
+    5 * 60 * 1000,
+  );
+
+  mainWindow.on('closed', () => {
+    clearInterval(checkInterval);
   });
 }

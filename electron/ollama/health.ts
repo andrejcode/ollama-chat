@@ -1,49 +1,58 @@
-import { getStoreValue } from '@electron/store';
+import { getStoreValue, setStoreValue } from '@electron/store';
+import { BrowserWindow } from 'electron';
+import { checkOllamaHealth, fetchModels } from './api';
+import { IpcChannels } from '@electron/types';
 
-export async function checkOllamaHealth(): Promise<{
-  ok: boolean;
-  message: string;
-}> {
-  try {
-    const ollamaUrl = getStoreValue('ollamaUrl');
+export async function performHealthCheckAndUpdateModels(
+  mainWindow?: BrowserWindow,
+): Promise<{ ok: boolean; message: string }> {
+  const healthStatus = await checkOllamaHealth();
 
-    if (!ollamaUrl) {
-      return {
-        ok: false,
-        message: 'Ollama URL is not set.',
-      };
+  if (healthStatus.ok) {
+    try {
+      const { models } = await fetchModels();
+      setStoreValue('models', models);
+
+      const currentModel = getStoreValue('currentModel');
+
+      if (models && models.length > 0 && !currentModel) {
+        setStoreValue('currentModel', models[0].name);
+
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send(
+            IpcChannels.OLLAMA_SET_CURRENT_MODEL,
+            models[0].name,
+          );
+        }
+      } else if (currentModel && models && models.length > 0) {
+        const modelExists = models.some((model) => model.name === currentModel);
+
+        if (!modelExists) {
+          setStoreValue('currentModel', models[0].name);
+
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send(
+              IpcChannels.OLLAMA_SET_CURRENT_MODEL,
+              models[0].name,
+            );
+          }
+        }
+      }
+
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, models);
+      }
+    } catch {
+      setStoreValue('models', null);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, null);
+      }
     }
-
-    const response = await fetch(ollamaUrl, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        message: `Ollama server returned status: ${response.status}`,
-      };
-    }
-
-    const data = await response.text();
-
-    if (data !== 'Ollama is running') {
-      return {
-        ok: false,
-        message: 'Unexpected response from Ollama server.',
-      };
-    }
-
-    return {
-      ok: true,
-      message: 'Ollama is running.',
-    };
-  } catch {
-    return {
-      ok: false,
-      message:
-        'Unable to connect to Ollama. Please check that the URL is correct and the service is running.',
-    };
   }
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send(IpcChannels.OLLAMA_HEALTH_STATUS, healthStatus);
+  }
+
+  return healthStatus;
 }

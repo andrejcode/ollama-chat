@@ -1,10 +1,9 @@
 import { app, BrowserWindow } from 'electron';
 import createWindow from './window';
-import { registerOllamaHandlers } from '../ollama';
-import { registerStoreHandlers } from '../store';
+import { initializeOllama, registerOllamaHandlers } from '../ollama';
 import { initializeTheme, registerThemeHandlers } from './theme';
+import { registerSidebarHandlers } from '../sidebar';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let win: BrowserWindow | null;
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -30,7 +29,11 @@ void app.whenReady().then(() => {
 
   initializeTheme();
 
+  if (win) {
+    initializeOllama(win);
+  }
+
   registerThemeHandlers();
   registerOllamaHandlers();
-  registerStoreHandlers();
+  registerSidebarHandlers();
 });

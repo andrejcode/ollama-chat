@@ -1,20 +1,30 @@
 import SidebarContext from '@/contexts/SidebarContext';
-import useElectronStore from '@/hooks/useElectronStore';
+import { useEffect, useState } from 'react';
 
 export default function SidebarProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { value: isSidebarOpen, updateValue } =
-    useElectronStore('isSidebarOpen');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const getInitialSidebarState = async () => {
+      const sidebarState = await window.electronApi.getSidebarState();
+      setIsSidebarOpen(sidebarState);
+    };
+
+    void getInitialSidebarState();
+  }, []);
 
   const closeSidebar = () => {
-    void updateValue(false);
+    void window.electronApi.setSidebarState(false);
+    setIsSidebarOpen(false);
   };
 
   const openSidebar = () => {
-    void updateValue(true);
+    void window.electronApi.setSidebarState(true);
+    setIsSidebarOpen(true);
   };
 
   return (

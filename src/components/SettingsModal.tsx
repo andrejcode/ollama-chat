@@ -20,19 +20,24 @@ export default function SettingsModal() {
 
   // TODO: Add Ollama URL input
   const updateOllamaUrl = async (url: string) => {
-    await window.electronApi.setOllamaUrl(url);
+    try {
+      const status = await window.electronApi.setOllamaUrl(url);
 
-    const status = await window.electronApi.checkOllamaHealth();
-
-    if (!status.ok) {
+      if (!status.ok) {
+        updateAlertMessage({
+          message: status.message,
+          type: 'error',
+        });
+      } else {
+        updateAlertMessage({
+          message: 'Ollama URL updated successfully.',
+          type: 'success',
+        });
+      }
+    } catch (error) {
       updateAlertMessage({
-        message: status.message,
+        message: 'Failed to update Ollama URL',
         type: 'error',
-      });
-    } else {
-      updateAlertMessage({
-        message: 'Ollama URL updated successfully.',
-        type: 'success',
       });
     }
   };

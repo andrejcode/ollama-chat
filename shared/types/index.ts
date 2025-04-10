@@ -4,27 +4,47 @@ export interface ElectronApi {
   onStreamError: (callback: (error: string) => void) => void;
   onStreamComplete: (callback: () => void) => void;
 
-  setOllamaUrl: (url: string) => Promise<boolean>;
+  getSidebarState: () => Promise<boolean>;
+  setSidebarState: (isOpen: boolean) => Promise<void>;
+
+  setOllamaUrl: (url: string) => Promise<{ ok: boolean; message: string }>;
+
+  getHealthStatus: () => Promise<{ ok: boolean; message: string }>;
   checkOllamaHealth: () => Promise<{ ok: boolean; message: string }>;
+  onOllamaHealthStatus: (
+    callback: (status: { ok: boolean; message: string }) => void,
+  ) => () => void;
+
+  getModels: () => Promise<Model[]>;
+  onModelsUpdated: (callback: (models: Model[]) => void) => () => void;
+
+  getCurrentModel: () => Promise<string | null>;
+  setCurrentModel: (modelName: string) => Promise<boolean>;
+  onCurrentModelChanged: (callback: (modelName: string) => void) => () => void;
 
   setThemeDark: () => Promise<void>;
   setThemeLight: () => Promise<void>;
   setThemeSystem: () => Promise<void>;
-
-  getStoreValue: <T>(key: string) => Promise<T>;
-  setStoreValue: (key: string, value: unknown) => Promise<boolean>;
-}
-
-type Theme = 'dark' | 'light' | 'system';
-
-export interface StoreSchema {
-  isSidebarOpen: boolean;
-  theme: Theme;
-  ollamaUrl: string;
 }
 
 export interface Message {
   id: string;
   role: string;
   content: string;
+}
+
+interface ModelDetails {
+  format: string;
+  family: string;
+  families: string[] | null;
+  parameter_size: string;
+  quantization_level: string;
+}
+
+export interface Model {
+  name: string;
+  modified_at: string;
+  size: number;
+  digest: string;
+  details: ModelDetails;
 }
