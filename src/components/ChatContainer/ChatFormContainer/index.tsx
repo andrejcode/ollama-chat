@@ -53,7 +53,7 @@ export default function ChatFormContainer({
       updateAssistantMessage(assistantMessageId, chunk);
     };
 
-    const unsubscribe =
+    const removeStreamListener =
       window.electronApi.onStreamResponse(handleStreamResponse);
 
     window.electronApi.onStreamError((errorMessage: string) => {
@@ -61,13 +61,13 @@ export default function ChatFormContainer({
       updateErrorMessage({ message: errorMessage, type: 'error' });
       setIsStreamComplete(true);
 
-      unsubscribe();
+      removeStreamListener();
     });
 
     window.electronApi.onStreamComplete(() => {
       setIsStreamComplete(true);
 
-      unsubscribe();
+      removeStreamListener();
     });
   };
 

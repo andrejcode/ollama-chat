@@ -20,6 +20,7 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 
 describe('ChatFormContainer component', () => {
   const mockStartChat = vi.fn();
+  const mockRemoveStreamListener = vi.fn();
   let mockElectronApi: ReturnType<typeof createMockElectronApi>;
 
   const mockAlertMessageContext = {
@@ -70,8 +71,7 @@ describe('ChatFormContainer component', () => {
   });
 
   it('submits the form and sends prompt to Ollama', () => {
-    const mockUnsubscribe = vi.fn();
-    mockElectronApi.onStreamResponse.mockReturnValue(mockUnsubscribe);
+    mockElectronApi.onStreamResponse.mockReturnValue(mockRemoveStreamListener);
 
     render(
       <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
@@ -114,14 +114,13 @@ describe('ChatFormContainer component', () => {
   });
 
   it('handles stream response correctly', () => {
-    const mockUnsubscribe = vi.fn();
-    mockElectronApi.onStreamResponse.mockReturnValue(mockUnsubscribe);
+    mockElectronApi.onStreamResponse.mockReturnValue(mockRemoveStreamListener);
 
     let capturedStreamHandler: (chunk: string) => void = () => {};
     mockElectronApi.onStreamResponse.mockImplementation(
       (handler: (chunk: string) => void) => {
         capturedStreamHandler = handler;
-        return mockUnsubscribe;
+        return mockRemoveStreamListener;
       },
     );
 
@@ -156,8 +155,7 @@ describe('ChatFormContainer component', () => {
   });
 
   it('handles stream error correctly', () => {
-    const mockUnsubscribe = vi.fn();
-    mockElectronApi.onStreamResponse.mockReturnValue(mockUnsubscribe);
+    mockElectronApi.onStreamResponse.mockReturnValue(mockRemoveStreamListener);
 
     let capturedErrorHandler: (error: string) => void = () => {};
     mockElectronApi.onStreamError.mockImplementation((handler) => {
@@ -183,6 +181,6 @@ describe('ChatFormContainer component', () => {
       message: 'Connection error',
       type: 'error',
     });
-    expect(mockUnsubscribe).toHaveBeenCalled();
+    expect(mockRemoveStreamListener).toHaveBeenCalled();
   });
 });
