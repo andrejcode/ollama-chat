@@ -4,7 +4,7 @@ import { initializeOllama, registerOllamaHandlers } from '../ollama';
 import { initializeTheme, registerThemeHandlers } from './theme';
 import { registerSidebarHandlers } from '../sidebar';
 
-let win: BrowserWindow | null;
+let window: BrowserWindow | null;
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -12,7 +12,7 @@ let win: BrowserWindow | null;
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
-    win = null;
+    window = null;
   }
 });
 
@@ -20,18 +20,17 @@ app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    win = createWindow();
+    window = createWindow();
   }
 });
 
 void app.whenReady().then(() => {
-  win = createWindow();
+  window = createWindow();
+  if (window) {
+    initializeOllama(window);
+  }
 
   initializeTheme();
-
-  if (win) {
-    initializeOllama(win);
-  }
 
   registerThemeHandlers();
   registerOllamaHandlers();

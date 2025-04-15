@@ -52,7 +52,8 @@ export async function fetchModels(): Promise<ModelsResponse> {
     throw new Error('Unable to get models.');
   }
 
-  return response.json() as Promise<ModelsResponse>;
+  const data = (await response.json()) as ModelsResponse;
+  return data;
 }
 
 export async function checkOllamaHealth(): Promise<{

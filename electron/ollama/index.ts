@@ -39,17 +39,20 @@ export function registerOllamaHandlers() {
     }),
   );
 
-  ipcMain.handle(IpcChannels.OLLAMA_URL_CHANGE, async (_event, url: string) => {
+  ipcMain.handle(IpcChannels.OLLAMA_URL_CHANGE, async (event, url: string) => {
     setStoreValue('ollamaUrl', url);
-    return await performHealthCheckAndUpdateModels();
+
+    const window = BrowserWindow.fromWebContents(event.sender);
+    return await performHealthCheckAndUpdateModels(window);
   });
 
   ipcMain.handle(IpcChannels.OLLAMA_GET_HEALTH, () => {
     return getStoreValue('healthStatus');
   });
 
-  ipcMain.handle(IpcChannels.OLLAMA_HEALTH_CHECK, async () => {
-    return await performHealthCheckAndUpdateModels();
+  ipcMain.handle(IpcChannels.OLLAMA_HEALTH_CHECK, async (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    return await performHealthCheckAndUpdateModels(window);
   });
 
   ipcMain.handle(IpcChannels.OLLAMA_MODELS_GET, () => {
@@ -69,8 +72,8 @@ export function registerOllamaHandlers() {
   );
 }
 
-export function initializeOllama(mainWindow: BrowserWindow) {
-  performHealthCheckAndUpdateModels(mainWindow)
+export function initializeOllama(window: BrowserWindow) {
+  performHealthCheckAndUpdateModels(window)
     .then((health) => {
       console.log('Initial Ollama health check:', health.ok ? 'OK' : 'Failed');
     })
@@ -81,19 +84,19 @@ export function initializeOllama(mainWindow: BrowserWindow) {
   // Set up periodic health checks every 5 minutes
   const checkInterval = setInterval(
     () => {
-      if (mainWindow.isDestroyed()) {
+      if (window.isDestroyed()) {
         clearInterval(checkInterval);
         return;
       }
 
-      performHealthCheckAndUpdateModels(mainWindow).catch((error) => {
+      performHealthCheckAndUpdateModels(window).catch((error) => {
         console.error('Error during periodic Ollama health check:', error);
       });
     },
     5 * 60 * 1000,
   );
 
-  mainWindow.on('closed', () => {
+  window.on('closed', () => {
     clearInterval(checkInterval);
   });
 }

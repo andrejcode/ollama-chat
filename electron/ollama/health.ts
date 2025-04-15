@@ -4,7 +4,7 @@ import { checkOllamaHealth, fetchModels } from './api';
 import { IpcChannels } from '@electron/types';
 
 export async function performHealthCheckAndUpdateModels(
-  mainWindow?: BrowserWindow,
+  window: BrowserWindow | null,
 ): Promise<{ ok: boolean; message: string }> {
   const healthStatus = await checkOllamaHealth();
 
@@ -13,25 +13,20 @@ export async function performHealthCheckAndUpdateModels(
       const { models } = await fetchModels();
       setStoreValue('models', models);
 
-      const currentModel = getStoreValue('currentModel');
-
-      if (models && models.length > 0 && !currentModel) {
-        setStoreValue('currentModel', models[0].name);
-
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send(
-            IpcChannels.OLLAMA_SET_CURRENT_MODEL,
-            models[0].name,
-          );
+      if (!models || models.length === 0) {
+        setStoreValue('currentModel', null);
+        if (window && !window.isDestroyed()) {
+          window.webContents.send(IpcChannels.OLLAMA_SET_CURRENT_MODEL, null);
         }
-      } else if (currentModel && models && models.length > 0) {
-        const modelExists = models.some((model) => model.name === currentModel);
+      } else {
+        const currentModel = getStoreValue('currentModel');
+        const modelExists =
+          currentModel && models.some((model) => model.name === currentModel);
 
         if (!modelExists) {
           setStoreValue('currentModel', models[0].name);
-
-          if (mainWindow && !mainWindow.isDestroyed()) {
-            mainWindow.webContents.send(
+          if (window && !window.isDestroyed()) {
+            window.webContents.send(
               IpcChannels.OLLAMA_SET_CURRENT_MODEL,
               models[0].name,
             );
@@ -39,19 +34,30 @@ export async function performHealthCheckAndUpdateModels(
         }
       }
 
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, models);
+      if (window && !window.isDestroyed()) {
+        window.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, models);
       }
-    } catch {
+    } catch (error) {
       setStoreValue('models', null);
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, null);
+      setStoreValue('currentModel', null);
+
+      if (window && !window.isDestroyed()) {
+        window.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, null);
+        window.webContents.send(IpcChannels.OLLAMA_SET_CURRENT_MODEL, null);
       }
+    }
+  } else {
+    setStoreValue('models', null);
+    setStoreValue('currentModel', null);
+
+    if (window && !window.isDestroyed()) {
+      window.webContents.send(IpcChannels.OLLAMA_MODELS_UPDATED, null);
+      window.webContents.send(IpcChannels.OLLAMA_SET_CURRENT_MODEL, null);
     }
   }
 
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.webContents.send(IpcChannels.OLLAMA_HEALTH_STATUS, healthStatus);
+  if (window && !window.isDestroyed()) {
+    window.webContents.send(IpcChannels.OLLAMA_HEALTH_STATUS, healthStatus);
   }
 
   return healthStatus;

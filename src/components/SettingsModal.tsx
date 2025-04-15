@@ -23,12 +23,7 @@ export default function SettingsModal() {
     try {
       const status = await window.electronApi.setOllamaUrl(url);
 
-      if (!status.ok) {
-        updateAlertMessage({
-          message: status.message,
-          type: 'error',
-        });
-      } else {
+      if (status.ok) {
         updateAlertMessage({
           message: 'Ollama URL updated successfully.',
           type: 'success',
@@ -36,7 +31,7 @@ export default function SettingsModal() {
       }
     } catch (error) {
       updateAlertMessage({
-        message: 'Failed to update Ollama URL',
+        message: 'An unexpected error occurred while updating the Ollama URL.',
         type: 'error',
       });
     }

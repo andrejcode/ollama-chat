@@ -36,7 +36,7 @@ export default function HealthProvider({
       });
 
     // Listen for future health status updates
-    const unsubscribeHealth = window.electronApi.onOllamaHealthStatus(
+    const removeHealthListener = window.electronApi.onOllamaHealthStatus(
       (status) => {
         setHealthStatus(status);
 
@@ -50,7 +50,7 @@ export default function HealthProvider({
     );
 
     return () => {
-      unsubscribeHealth();
+      removeHealthListener();
     };
   }, [updateAlertMessage]);
 
