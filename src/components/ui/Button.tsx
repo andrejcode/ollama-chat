@@ -7,6 +7,7 @@ interface ButtonProps {
   children: React.ReactNode;
   'aria-label'?: string;
   title?: string;
+  disabled?: boolean;
 }
 
 export default function Button({
@@ -16,17 +17,20 @@ export default function Button({
   children,
   'aria-label': ariaLabel,
   title,
+  disabled = false,
 }: ButtonProps) {
   return (
     <button
       type={type}
       onClick={onClick}
       className={clsx(
-        'cursor-pointer rounded-lg p-1 hover:bg-neutral-300 focus:outline-none focus-visible:ring dark:hover:bg-neutral-600',
+        'rounded-lg p-1 hover:bg-neutral-300 focus:outline-none focus-visible:ring dark:hover:bg-neutral-600',
+        disabled ? 'cursor-default' : 'cursor-pointer',
         className,
       )}
       aria-label={ariaLabel}
       title={title}
+      disabled={disabled}
     >
       {children}
     </button>
