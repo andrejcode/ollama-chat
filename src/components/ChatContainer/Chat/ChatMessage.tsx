@@ -81,7 +81,9 @@ export default function ChatMessage({
         className={clsx(
           'absolute -bottom-6 rounded transition-opacity duration-500 ease-in-out focus:outline-none focus-visible:ring',
           message.role === 'user' ? 'right-0' : 'left-0',
-          isHovered ? 'opacity-100' : 'opacity-0',
+          isHovered
+            ? 'pointer-events-auto opacity-100'
+            : 'pointer-events-none opacity-0',
         )}
         onClick={() => handleCopy(message.content)}
         aria-label={
