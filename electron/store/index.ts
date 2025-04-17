@@ -1,9 +1,9 @@
 import Store from 'electron-store';
-import type { Model } from '@shared/types';
+import type { Model, Theme } from '@shared/types';
 
 interface StoreSchema {
   isSidebarOpen: boolean;
-  theme: 'light' | 'dark' | 'system';
+  theme: Theme;
   ollamaUrl: string;
   healthStatus: { ok: boolean; message: string };
   models: Model[] | null;

@@ -12,6 +12,10 @@ export function initializeTheme() {
 }
 
 export function registerThemeHandlers() {
+  ipcMain.handle(IpcChannels.THEME_GET, () => {
+    return getStoreValue('theme');
+  });
+
   ipcMain.handle(IpcChannels.THEME_SYSTEM, () => {
     nativeTheme.themeSource = 'system';
     setStoreValue('theme', 'system');

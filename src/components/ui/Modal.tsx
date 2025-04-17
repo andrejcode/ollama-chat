@@ -25,7 +25,7 @@ export default function Modal({
       <div className="fixed inset-0 bg-neutral-900/50 dark:bg-neutral-900/80" />
 
       <div
-        className="z-40 w-2xl rounded-2xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-800 shadow-lg dark:border-none dark:bg-neutral-700 dark:text-neutral-100"
+        className="z-40 w-xl rounded-2xl border border-neutral-200 bg-neutral-50 p-6 text-neutral-800 shadow-lg dark:border-none dark:bg-neutral-700 dark:text-neutral-100"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -34,7 +34,7 @@ export default function Modal({
             <X />
           </Button>
         </div>
-        <hr className="my-4 border-neutral-200 dark:border-neutral-600" />
+        <hr className="my-4 border-neutral-200 dark:border-neutral-500" />
 
         {children}
       </div>

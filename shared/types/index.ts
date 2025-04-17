@@ -22,10 +22,13 @@ export interface ElectronApi {
   setCurrentModel: (modelName: string) => Promise<boolean>;
   onCurrentModelChanged: (callback: (modelName: string) => void) => () => void;
 
+  getTheme: () => Promise<Theme>;
   setThemeDark: () => Promise<void>;
   setThemeLight: () => Promise<void>;
   setThemeSystem: () => Promise<void>;
 }
+
+export type Theme = 'light' | 'dark' | 'system';
 
 export interface Message {
   id: string;

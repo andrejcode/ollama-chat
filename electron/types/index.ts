@@ -47,6 +47,7 @@ export enum IpcChannels {
   OLLAMA_GET_CURRENT_MODEL = 'ollama-get-current-model',
   OLLAMA_SET_CURRENT_MODEL = 'ollama-set-current-model',
 
+  THEME_GET = 'theme-get',
   THEME_DARK = 'theme-dark',
   THEME_LIGHT = 'theme-light',
   THEME_SYSTEM = 'theme-system',

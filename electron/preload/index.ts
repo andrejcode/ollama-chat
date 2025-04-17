@@ -83,6 +83,7 @@ const electronApi: ElectronApi = {
       );
   },
 
+  getTheme: () => ipcRenderer.invoke(IpcChannels.THEME_GET),
   setThemeDark: () => ipcRenderer.invoke(IpcChannels.THEME_DARK),
   setThemeLight: () => ipcRenderer.invoke(IpcChannels.THEME_LIGHT),
   setThemeSystem: () => ipcRenderer.invoke(IpcChannels.THEME_SYSTEM),
