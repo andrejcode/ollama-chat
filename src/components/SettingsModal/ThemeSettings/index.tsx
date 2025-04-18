@@ -11,6 +11,7 @@ export default function ThemeSettings() {
         const currentTheme = await window.electronApi.getTheme();
         setTheme(currentTheme);
       } catch (error) {
+        setTheme(null);
         console.error('Error fetching theme:', error);
       }
     };
