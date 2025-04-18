@@ -29,6 +29,7 @@ const electronApi: ElectronApi = {
   setSidebarState: (isOpen: boolean) =>
     ipcRenderer.invoke(IpcChannels.SET_IS_SIDEBAR_OPEN, isOpen),
 
+  getOllamaUrl: () => ipcRenderer.invoke(IpcChannels.OLLAMA_URL_GET),
   setOllamaUrl: (url: string) =>
     ipcRenderer.invoke(IpcChannels.OLLAMA_URL_CHANGE, url),
 

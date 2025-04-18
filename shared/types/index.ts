@@ -7,6 +7,7 @@ export interface ElectronApi {
   getSidebarState: () => Promise<boolean>;
   setSidebarState: (isOpen: boolean) => Promise<void>;
 
+  getOllamaUrl: () => Promise<string>;
   setOllamaUrl: (url: string) => Promise<{ ok: boolean; message: string }>;
 
   getHealthStatus: () => Promise<{ ok: boolean; message: string }>;

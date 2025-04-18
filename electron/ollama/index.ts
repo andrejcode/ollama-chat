@@ -39,6 +39,10 @@ export function registerOllamaHandlers() {
     }),
   );
 
+  ipcMain.handle(IpcChannels.OLLAMA_URL_GET, () => {
+    return getStoreValue('ollamaUrl');
+  });
+
   ipcMain.handle(IpcChannels.OLLAMA_URL_CHANGE, async (event, url: string) => {
     setStoreValue('ollamaUrl', url);
 

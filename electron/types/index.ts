@@ -36,6 +36,7 @@ export enum IpcChannels {
   GET_IS_SIDEBAR_OPEN = 'get-is-sidebar-open',
   SET_IS_SIDEBAR_OPEN = 'set-is-sidebar-open',
 
+  OLLAMA_URL_GET = 'ollama-url-get',
   OLLAMA_URL_CHANGE = 'ollama-url-change',
 
   OLLAMA_GET_HEALTH = 'ollama-get-health',
