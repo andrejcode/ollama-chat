@@ -79,7 +79,7 @@ export default function Alert({
         <button
           type="button"
           onClick={handleClose}
-          className="ml-auto cursor-pointer"
+          className="ml-auto cursor-pointer rounded focus:outline-none focus-visible:ring"
           aria-label="Close alert"
           title="Close alert"
         >
