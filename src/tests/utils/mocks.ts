@@ -10,6 +10,7 @@ export function createMockElectronApi() {
     getSidebarState: vi.fn(),
     setSidebarState: vi.fn(),
 
+    getOllamaUrl: vi.fn(),
     setOllamaUrl: vi.fn(),
 
     getHealthStatus: vi.fn(),
@@ -23,6 +24,7 @@ export function createMockElectronApi() {
     setCurrentModel: vi.fn(),
     onCurrentModelChanged: vi.fn(),
 
+    getTheme: vi.fn(),
     setThemeDark: vi.fn(),
     setThemeLight: vi.fn(),
     setThemeSystem: vi.fn(),
