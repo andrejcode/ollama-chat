@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import SettingsModal from '../SettingsModal';
+import SettingsModal from '../index';
 import useSettingsModalContext from '@/hooks/useSettingsModalContext';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 import AlertMessageProvider from '@/providers/AlertMessageProvider';
