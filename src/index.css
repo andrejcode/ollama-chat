@@ -3,6 +3,7 @@
 
 @theme {
   --animate-spin-once: spin-once 1s linear;
+  --animate-wipe: wipe 1.5s ease-in-out infinite;
 
   @keyframes spin-once {
     0% {
@@ -10,6 +11,15 @@
     }
     100% {
       transform: rotate(360deg);
+    }
+  }
+
+  @keyframes wipe {
+    0% {
+      background-position: -100% 0;
+    }
+    100% {
+      background-position: 100% 0;
     }
   }
 }

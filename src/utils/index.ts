@@ -1,3 +1,4 @@
+import { THINK_TAG_REGEX } from '@/constants';
 import type { Message } from '@shared/types';
 import { v4 } from 'uuid';
 
@@ -10,3 +11,10 @@ export function getLastAssistantMessageIndex(messages: Message[]) {
 export function generateUniqueId() {
   return v4();
 }
+
+// We are considering here that reasoning models will
+// always return both opening and closing tags
+// and we remove the content in between
+export const removeThinkingContent = (text: string): string => {
+  return text.replace(THINK_TAG_REGEX, '').trim();
+};

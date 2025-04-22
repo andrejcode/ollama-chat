@@ -1,13 +1,11 @@
+import clsx from 'clsx';
 import { useState } from 'react';
-import useModelContext from '@/hooks/useModelContext';
+import { RotateCcw as RotateIcon } from 'lucide-react';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import Button from '../ui/Button';
-import {
-  ChevronDown as ChevronIcon,
-  RotateCcw as RotateIcon,
-} from 'lucide-react';
+import ChevronToggleButton from '../ChevronToggleButton';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
-import clsx from 'clsx';
+import useModelContext from '@/hooks/useModelContext';
 
 export default function Model() {
   const [isReloading, setIsReloading] = useState(false);
@@ -38,6 +36,10 @@ export default function Model() {
     setShowDropdown(false);
   };
 
+  const handleDropdownToggle = () => {
+    setShowDropdown((prev) => !prev);
+  };
+
   if (isLoading) {
     return (
       <Button disabled>
@@ -56,17 +58,12 @@ export default function Model() {
 
   return currentModel && models ? (
     <div className="relative inline-block">
-      <Button onClick={() => setShowDropdown((prev) => !prev)}>
-        <div className="flex items-center justify-center gap-1 px-2">
-          <div className="text-lg">{currentModel}</div>
-          <ChevronIcon
-            className={clsx(
-              'transition-transform duration-200',
-              showDropdown && 'rotate-180',
-            )}
-          />
-        </div>
-      </Button>
+      <ChevronToggleButton
+        buttonText={currentModel}
+        textClassName="text-lg"
+        isOpen={showDropdown}
+        onToggle={handleDropdownToggle}
+      />
       <ul
         className={clsx(
           'absolute top-full left-0 z-10 mt-2 rounded-2xl bg-neutral-50 p-2 shadow transition-opacity duration-200 dark:bg-neutral-700',

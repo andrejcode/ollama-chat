@@ -4,7 +4,8 @@ import { Copy, Check, X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import MarkdownRenderer from './MarkdownRenderer';
-import { Message } from '@shared/types';
+import { removeThinkingContent } from '@/utils';
+import type { Message } from '@shared/types';
 
 type CopyStatus = 'idle' | 'copied' | 'error';
 
@@ -21,8 +22,10 @@ export default function ChatMessage({
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   const handleCopy = (text: string) => {
+    const cleanedText = removeThinkingContent(text);
+
     navigator.clipboard
-      .writeText(text)
+      .writeText(cleanedText)
       .then(() => {
         setCopyStatus('copied');
       })
@@ -81,9 +84,7 @@ export default function ChatMessage({
         className={clsx(
           'absolute -bottom-6 rounded transition-opacity duration-500 ease-in-out focus:outline-none focus-visible:ring',
           message.role === 'user' ? 'right-0' : 'left-0',
-          isHovered
-            ? 'pointer-events-auto opacity-100'
-            : 'pointer-events-none opacity-0',
+          isHovered ? 'opacity-100' : 'opacity-0',
         )}
         onClick={() => handleCopy(message.content)}
         aria-label={

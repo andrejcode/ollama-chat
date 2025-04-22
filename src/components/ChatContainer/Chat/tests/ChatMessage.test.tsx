@@ -1,15 +1,29 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ChatMessage from '../ChatMessage';
 import type { Message } from '@shared/types';
 
 describe('ChatMessage component', () => {
+  const testMessages: Record<string, Message> = {
+    user: { id: '1', role: 'user', content: 'User message' },
+    assistant: { id: '2', role: 'assistant', content: 'Assistant message' },
+    copyTest: { id: '3', role: 'assistant', content: 'Message to be copied' },
+    withThinking: {
+      id: '4',
+      role: 'assistant',
+      content: '<think>\nThinking process here\n</think>\nActual content',
+    },
+    onlyThinking: {
+      id: '5',
+      role: 'assistant',
+      content: '<think>Only thinking content here</think>',
+    },
+  };
+
   it('renders the user message', () => {
-    const message: Message = { id: '1', role: 'user', content: 'User message' };
+    render(<ChatMessage message={testMessages.user} />);
 
-    render(<ChatMessage message={message} />);
-
-    expect(screen.getByText(message.content)).toBeInTheDocument();
+    expect(screen.getByText(testMessages.user.content)).toBeInTheDocument();
     expect(screen.getByRole('listitem')).toHaveAttribute(
       'aria-label',
       'Your message',
@@ -17,105 +31,19 @@ describe('ChatMessage component', () => {
   });
 
   it('renders the assistant message', () => {
-    const message: Message = {
-      id: '2',
-      role: 'assistant',
-      content: 'Assistant message',
-    };
+    render(<ChatMessage message={testMessages.assistant} />);
 
-    render(<ChatMessage message={message} />);
-
-    expect(screen.getByText(message.content)).toBeInTheDocument();
+    expect(
+      screen.getByText(testMessages.assistant.content),
+    ).toBeInTheDocument();
     expect(screen.getByRole('listitem')).toHaveAttribute(
       'aria-label',
       'Assistant message',
     );
   });
 
-  it('should copy text to clipboard', async () => {
-    const message: Message = {
-      id: '3',
-      role: 'assistant',
-      content: 'Message to be copied',
-    };
-
-    const clipboardWriteTextMock = vi.fn().mockResolvedValue(undefined as void);
-    Object.defineProperty(navigator, 'clipboard', {
-      writable: true,
-      value: { writeText: clipboardWriteTextMock },
-    });
-
-    render(<ChatMessage message={message} />);
-
-    const copyButton = screen.getByRole('button', {
-      name: /Copy to clipboard/,
-    });
-    fireEvent.click(copyButton);
-
-    expect(clipboardWriteTextMock).toHaveBeenCalledWith(message.content);
-    expect(
-      await screen.findByLabelText('Copied to clipboard'),
-    ).toBeInTheDocument();
-  });
-
-  it('displays an error icon when clipboard copy fails', async () => {
-    const message: Message = {
-      id: '4',
-      role: 'assistant',
-      content: 'Failed copy message',
-    };
-
-    const clipboardWriteTextMock = vi
-      .fn()
-      .mockRejectedValue(new Error('Copy failed'));
-    Object.defineProperty(navigator, 'clipboard', {
-      writable: true,
-      value: { writeText: clipboardWriteTextMock },
-    });
-
-    render(<ChatMessage message={message} />);
-
-    const copyButton = screen.getByRole('button', {
-      name: /Copy to clipboard/,
-    });
-    fireEvent.click(copyButton);
-
-    const errorIcon = await screen.findByLabelText('Failed to copy');
-    expect(errorIcon).toBeInTheDocument();
-  });
-
-  it('displays a check icon when text is successfully copied to clipboard', async () => {
-    const message: Message = {
-      id: '5',
-      role: 'assistant',
-      content: 'Test message',
-    };
-
-    const clipboardWriteTextMock = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', {
-      writable: true,
-      value: { writeText: clipboardWriteTextMock },
-    });
-
-    render(<ChatMessage message={message} />);
-
-    const copyButton = screen.getByRole('button', {
-      name: /Copy to clipboard/,
-    });
-    fireEvent.click(copyButton);
-
-    const successIcon = await screen.findByLabelText('Copied to clipboard');
-    expect(successIcon).toBeInTheDocument();
-  });
-
   it('should show/hide copy button on hover', () => {
-    const message: Message = {
-      id: '6',
-      role: 'assistant',
-      content: 'Hover test message',
-    };
-
-    render(<ChatMessage message={message} />);
+    render(<ChatMessage message={testMessages.assistant} />);
 
     const messageElement = screen.getByRole('listitem');
     const copyButton = screen.getByRole('button', {
@@ -131,34 +59,108 @@ describe('ChatMessage component', () => {
     expect(copyButton).toHaveClass('opacity-0');
   });
 
-  it('should return to copy icon after 3 seconds of successful copy', async () => {
-    const message: Message = {
-      id: '7',
-      role: 'assistant',
-      content: 'Timeout test message',
-    };
+  describe('clipboard operations', () => {
+    let clipboardWriteTextMock: ReturnType<typeof vi.fn>;
 
-    const clipboardWriteTextMock = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', {
-      writable: true,
-      value: { writeText: clipboardWriteTextMock },
+    beforeEach(() => {
+      clipboardWriteTextMock = vi.fn().mockResolvedValue(undefined);
+      Object.defineProperty(navigator, 'clipboard', {
+        writable: true,
+        value: { writeText: clipboardWriteTextMock },
+      });
     });
 
-    vi.useFakeTimers();
+    it('should copy text to clipboard', async () => {
+      render(<ChatMessage message={testMessages.copyTest} />);
 
-    render(<ChatMessage message={message} />);
+      const copyButton = screen.getByRole('button', {
+        name: /Copy to clipboard/,
+      });
+      fireEvent.click(copyButton);
 
-    const copyButton = screen.getByRole('button', {
-      name: /Copy to clipboard/,
+      expect(clipboardWriteTextMock).toHaveBeenCalledWith(
+        testMessages.copyTest.content,
+      );
+      expect(
+        await screen.findByLabelText('Copied to clipboard'),
+      ).toBeInTheDocument();
     });
-    fireEvent.click(copyButton);
 
-    await act(async () => {
-      await vi.runAllTimersAsync();
+    it('displays an error icon when clipboard copy fails', async () => {
+      clipboardWriteTextMock.mockRejectedValue(new Error('Copy failed'));
+
+      render(<ChatMessage message={testMessages.copyTest} />);
+
+      const copyButton = screen.getByRole('button', {
+        name: /Copy to clipboard/,
+      });
+      fireEvent.click(copyButton);
+
+      const errorIcon = await screen.findByLabelText('Failed to copy');
+      expect(errorIcon).toBeInTheDocument();
     });
 
-    expect(copyButton).toBeInTheDocument();
+    it('displays a check icon when text is successfully copied to clipboard', async () => {
+      render(<ChatMessage message={testMessages.copyTest} />);
 
-    vi.useRealTimers();
+      const copyButton = screen.getByRole('button', {
+        name: /Copy to clipboard/,
+      });
+      fireEvent.click(copyButton);
+
+      const successIcon = await screen.findByLabelText('Copied to clipboard');
+      expect(successIcon).toBeInTheDocument();
+    });
+
+    it('should return to copy icon after 3 seconds of successful copy', async () => {
+      vi.useFakeTimers();
+
+      render(<ChatMessage message={testMessages.copyTest} />);
+
+      const copyButton = screen.getByRole('button', {
+        name: /Copy to clipboard/,
+      });
+      fireEvent.click(copyButton);
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      expect(copyButton).toBeInTheDocument();
+
+      vi.useRealTimers();
+    });
+
+    it('should remove thinking content before copying to clipboard', async () => {
+      render(<ChatMessage message={testMessages.withThinking} />);
+
+      const copyButton = screen.getByRole('button', {
+        name: /Copy to clipboard/,
+      });
+      fireEvent.click(copyButton);
+
+      // Assert clipboard was called with the cleaned text (without thinking tags)
+      expect(clipboardWriteTextMock).toHaveBeenCalledWith('Actual content');
+
+      expect(
+        await screen.findByLabelText('Copied to clipboard'),
+      ).toBeInTheDocument();
+    });
+
+    it('should handle message with only thinking content', async () => {
+      render(<ChatMessage message={testMessages.onlyThinking} />);
+
+      const copyButton = screen.getByRole('button', {
+        name: /Copy to clipboard/,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/require-await
+      await act(async () => {
+        fireEvent.click(copyButton);
+      });
+
+      // Assert clipboard was called with an empty string (all content was in thinking tags)
+      expect(clipboardWriteTextMock).toHaveBeenCalledWith('');
+    });
   });
 });
