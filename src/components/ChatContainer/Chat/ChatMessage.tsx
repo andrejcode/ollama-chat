@@ -1,9 +1,9 @@
 import clsx from 'clsx';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Copy, Check, X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import MarkdownRenderer from './MarkdownRenderer';
+import AssistantMessage from '@/components/ChatContainer/Chat/AssistantMessage.tsx';
 import { removeThinkingContent } from '@/utils';
 import type { Message } from '@shared/types';
 
@@ -20,6 +20,15 @@ export default function ChatMessage({
 }: ChatMessageProps) {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [isModelThinking, setIsModelThinking] = useState<boolean>(false);
+
+  const startThinking = useCallback(() => {
+    setIsModelThinking(true);
+  }, []);
+
+  const stopThinking = useCallback(() => {
+    setIsModelThinking(false);
+  }, []);
 
   const handleCopy = (text: string) => {
     const cleanedText = removeThinkingContent(text);
@@ -75,29 +84,36 @@ export default function ChatMessage({
         <>
           <LoadingSpinner isLoading={!!isLoadingAssistantMessage} />
           {!isLoadingAssistantMessage && (
-            <MarkdownRenderer content={message.content} />
+            <AssistantMessage
+              content={message.content}
+              isModelThinking={isModelThinking}
+              onStartThinking={startThinking}
+              onStopThinking={stopThinking}
+            />
           )}
         </>
       )}
 
-      <Button
-        className={clsx(
-          'absolute -bottom-6 rounded transition-opacity duration-500 ease-in-out focus:outline-none focus-visible:ring',
-          message.role === 'user' ? 'right-0' : 'left-0',
-          isHovered ? 'opacity-100' : 'opacity-0',
-        )}
-        onClick={() => handleCopy(message.content)}
-        aria-label={
-          copyStatus === 'copied'
-            ? 'Copied to clipboard'
-            : copyStatus === 'error'
-              ? 'Failed to copy'
-              : 'Copy to clipboard'
-        }
-        title="Copy to clipboard"
-      >
-        {renderIcon()}
-      </Button>
+      {!isLoadingAssistantMessage && !isModelThinking && (
+        <Button
+          className={clsx(
+            'absolute -bottom-6 rounded transition-opacity duration-500 ease-in-out focus:outline-none focus-visible:ring',
+            message.role === 'user' ? 'right-0' : 'left-0',
+            isHovered ? 'opacity-100' : 'opacity-0',
+          )}
+          onClick={() => handleCopy(message.content)}
+          aria-label={
+            copyStatus === 'copied'
+              ? 'Copied to clipboard'
+              : copyStatus === 'error'
+                ? 'Failed to copy'
+                : 'Copy to clipboard'
+          }
+          title="Copy to clipboard"
+        >
+          {renderIcon()}
+        </Button>
+      )}
     </div>
   );
 }
