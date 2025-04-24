@@ -16,7 +16,6 @@ export default function ChatFormContainer({
   onChatStart,
 }: ChatFormContainerProps) {
   const [userInput, setUserInput] = useState<string>('');
-  const [isStreamComplete, setIsStreamComplete] = useState<boolean>(true);
 
   const {
     updateAlertMessage: updateErrorMessage,
@@ -31,12 +30,14 @@ export default function ChatFormContainer({
     isLoadingAssistantMessage,
     startLoadingAssistantMessage,
     stopLoadingAssistantMessage,
+    startStreamMessage,
+    stopStreamMessage,
   } = useMessageContext();
 
   const sendPromptToOllama = (messagesToSend: Message[]) => {
     clearErrorMessage();
     startLoadingAssistantMessage();
-    setIsStreamComplete(false);
+    startStreamMessage();
 
     window.electronApi.sendPrompt(messagesToSend);
 
@@ -59,13 +60,13 @@ export default function ChatFormContainer({
     window.electronApi.onStreamError((errorMessage: string) => {
       stopLoadingAssistantMessage();
       updateErrorMessage({ message: errorMessage, type: 'error' });
-      setIsStreamComplete(true);
+      stopStreamMessage();
 
       removeStreamListener();
     });
 
     window.electronApi.onStreamComplete(() => {
-      setIsStreamComplete(true);
+      stopStreamMessage();
 
       removeStreamListener();
     });
@@ -98,7 +99,6 @@ export default function ChatFormContainer({
     <div className="mx-auto w-full max-w-4xl">
       <WelcomeTitle isChatStarted={isChatStarted} />
       <ChatForm
-        isStreamComplete={isStreamComplete}
         userInput={userInput}
         isLoadingAssistantMessage={isLoadingAssistantMessage}
         onSubmit={handleSubmit}

@@ -1,15 +1,13 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { Message } from '@shared/types';
 import MessageContext from '@/contexts/MessageContext';
 
-export default function MessageProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MessageProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoadingAssistantMessage, setIsLoadingAssistantMessage] =
     useState<boolean>(false);
+  const [isStreamMessageComplete, setIsStreamMessageComplete] =
+    useState<boolean>(true);
 
   const addEmptyAssistantMessage = (assistantMessageId: string) => {
     setMessages((prevMessages) => [
@@ -46,6 +44,14 @@ export default function MessageProvider({
     setIsLoadingAssistantMessage(false);
   };
 
+  const startStreamMessage = () => {
+    setIsStreamMessageComplete(false);
+  };
+
+  const stopStreamMessage = () => {
+    setIsStreamMessageComplete(true);
+  };
+
   return (
     <MessageContext.Provider
       value={{
@@ -56,6 +62,9 @@ export default function MessageProvider({
         isLoadingAssistantMessage,
         startLoadingAssistantMessage,
         stopLoadingAssistantMessage,
+        isStreamMessageComplete,
+        startStreamMessage,
+        stopStreamMessage,
       }}
     >
       {children}

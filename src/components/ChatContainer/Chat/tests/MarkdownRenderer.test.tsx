@@ -1,6 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import MarkdownRenderer from '../MarkdownRenderer';
+import type { Message } from '@shared/types';
+import MessageContext from '@/contexts/MessageContext';
 
 interface ChevronToggleButtonProps {
   buttonText: string;
@@ -28,14 +30,46 @@ vi.mock('@/components/ChevronToggleButton', () => ({
   ),
 }));
 
+const createMockMessageProvider = (
+  messages: Message[] = [],
+  isLoadingAssistantMessage = false,
+  isStreamMessageComplete = true,
+) => {
+  // eslint-disable-next-line react/display-name
+  return ({ children }: { children: React.ReactNode }) => (
+    <MessageContext.Provider
+      value={{
+        messages,
+        addEmptyAssistantMessage: vi.fn(),
+        updateAssistantMessage: vi.fn(),
+        addUserMessage: vi.fn(),
+        isLoadingAssistantMessage,
+        startLoadingAssistantMessage: vi.fn(),
+        stopLoadingAssistantMessage: vi.fn(),
+        isStreamMessageComplete,
+        startStreamMessage: vi.fn(),
+        stopStreamMessage: vi.fn(),
+      }}
+    >
+      {children}
+    </MessageContext.Provider>
+  );
+};
+
+const TestWrapper = createMockMessageProvider();
+
 describe('MarkdownRenderer component', () => {
   it('renders plain text correctly', () => {
-    render(<MarkdownRenderer content="Simple text content" />);
+    render(<MarkdownRenderer content="Simple text content" />, {
+      wrapper: TestWrapper,
+    });
     expect(screen.getByText('Simple text content')).toBeInTheDocument();
   });
 
   it('renders markdown formatting correctly', () => {
-    render(<MarkdownRenderer content="**Bold text** and *Italic text*" />);
+    render(<MarkdownRenderer content="**Bold text** and *Italic text*" />, {
+      wrapper: TestWrapper,
+    });
 
     const boldElement = screen.getByText('Bold text');
     const italicElement = screen.getByText('Italic text');
@@ -54,7 +88,9 @@ describe('MarkdownRenderer component', () => {
   });
 
   it('renders links correctly', () => {
-    render(<MarkdownRenderer content="[Link text](https://example.com)" />);
+    render(<MarkdownRenderer content="[Link text](https://example.com)" />, {
+      wrapper: TestWrapper,
+    });
 
     const link = screen.getByText('Link text');
     expect(link.tagName).toBe('A');
@@ -64,6 +100,7 @@ describe('MarkdownRenderer component', () => {
   it('renders code blocks with syntax highlighting', () => {
     render(
       <MarkdownRenderer content="```javascript\nconst x = 1;\nconsole.log(x);\n```" />,
+      { wrapper: TestWrapper },
     );
 
     expect(screen.getByText(/const x = 1;/)).toBeInTheDocument();
@@ -75,14 +112,18 @@ describe('MarkdownRenderer component', () => {
   });
 
   it('renders inline code correctly', () => {
-    render(<MarkdownRenderer content="This is `inline code`" />);
+    render(<MarkdownRenderer content="This is `inline code`" />, {
+      wrapper: TestWrapper,
+    });
 
     const codeText = screen.getByText('inline code');
     expect(codeText.tagName).toBe('CODE');
   });
 
   it('renders content without think tags normally', () => {
-    render(<MarkdownRenderer content="Normal content without think tags" />);
+    render(<MarkdownRenderer content="Normal content without think tags" />, {
+      wrapper: TestWrapper,
+    });
 
     expect(
       screen.getByText('Normal content without think tags'),
@@ -93,6 +134,7 @@ describe('MarkdownRenderer component', () => {
   it('renders content with think tags and shows toggle button', () => {
     render(
       <MarkdownRenderer content="Before <think>Thinking content</think> After" />,
+      { wrapper: TestWrapper },
     );
 
     expect(screen.getByText('Before')).toBeInTheDocument();
@@ -106,6 +148,7 @@ describe('MarkdownRenderer component', () => {
   it('toggles thinking content visibility when clicked', () => {
     render(
       <MarkdownRenderer content="Before <think>Thinking content</think> After" />,
+      { wrapper: TestWrapper },
     );
 
     const toggleButton = screen.getByTestId('thinking-toggle');
@@ -125,6 +168,7 @@ describe('MarkdownRenderer component', () => {
   it('handles multiple think blocks correctly', () => {
     render(
       <MarkdownRenderer content="Start <think>First thinking</think> Middle <think>Second thinking</think> End" />,
+      { wrapper: TestWrapper },
     );
 
     expect(screen.getByText('Start')).toBeInTheDocument();
@@ -144,7 +188,11 @@ describe('MarkdownRenderer component', () => {
   });
 
   it('handles active thinking state (no closing tag)', () => {
-    render(<MarkdownRenderer content="Start <think>Active thinking" />);
+    const TestWrapper = createMockMessageProvider([], true, false);
+
+    render(<MarkdownRenderer content="Start <think>Active thinking" />, {
+      wrapper: TestWrapper,
+    });
 
     const toggleButton = screen.getByTestId('thinking-toggle');
 
@@ -155,6 +203,7 @@ describe('MarkdownRenderer component', () => {
   it('handles markdown inside think blocks', () => {
     render(
       <MarkdownRenderer content="<think>**Bold thinking** and *italic thinking*</think>" />,
+      { wrapper: TestWrapper },
     );
 
     const toggleButton = screen.getByTestId('thinking-toggle');
@@ -178,6 +227,7 @@ describe('MarkdownRenderer component', () => {
   it('sanitizes dangerous HTML content', () => {
     render(
       <MarkdownRenderer content="<script>alert('xss')</script> Safe text" />,
+      { wrapper: TestWrapper },
     );
 
     expect(screen.queryByText("alert('xss')")).not.toBeInTheDocument();

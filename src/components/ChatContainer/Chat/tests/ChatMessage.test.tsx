@@ -2,6 +2,11 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ChatMessage from '../ChatMessage';
 import type { Message } from '@shared/types';
+import MessageProvider from '@/providers/MessageProvider.tsx';
+
+const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <MessageProvider>{children}</MessageProvider>;
+};
 
 describe('ChatMessage component', () => {
   const testMessages: Record<string, Message> = {
@@ -21,7 +26,9 @@ describe('ChatMessage component', () => {
   };
 
   it('renders the user message', () => {
-    render(<ChatMessage message={testMessages.user} />);
+    render(<ChatMessage message={testMessages.user} />, {
+      wrapper: TestWrapper,
+    });
 
     expect(screen.getByText(testMessages.user.content)).toBeInTheDocument();
     expect(screen.getByRole('listitem')).toHaveAttribute(
@@ -31,7 +38,9 @@ describe('ChatMessage component', () => {
   });
 
   it('renders the assistant message', () => {
-    render(<ChatMessage message={testMessages.assistant} />);
+    render(<ChatMessage message={testMessages.assistant} />, {
+      wrapper: TestWrapper,
+    });
 
     expect(
       screen.getByText(testMessages.assistant.content),
@@ -43,7 +52,9 @@ describe('ChatMessage component', () => {
   });
 
   it('should show/hide copy button on hover', () => {
-    render(<ChatMessage message={testMessages.assistant} />);
+    render(<ChatMessage message={testMessages.assistant} />, {
+      wrapper: TestWrapper,
+    });
 
     const messageElement = screen.getByRole('listitem');
     const copyButton = screen.getByRole('button', {
@@ -71,7 +82,9 @@ describe('ChatMessage component', () => {
     });
 
     it('should copy text to clipboard', async () => {
-      render(<ChatMessage message={testMessages.copyTest} />);
+      render(<ChatMessage message={testMessages.copyTest} />, {
+        wrapper: TestWrapper,
+      });
 
       const copyButton = screen.getByRole('button', {
         name: /Copy to clipboard/,
@@ -89,7 +102,9 @@ describe('ChatMessage component', () => {
     it('displays an error icon when clipboard copy fails', async () => {
       clipboardWriteTextMock.mockRejectedValue(new Error('Copy failed'));
 
-      render(<ChatMessage message={testMessages.copyTest} />);
+      render(<ChatMessage message={testMessages.copyTest} />, {
+        wrapper: TestWrapper,
+      });
 
       const copyButton = screen.getByRole('button', {
         name: /Copy to clipboard/,
@@ -101,7 +116,9 @@ describe('ChatMessage component', () => {
     });
 
     it('displays a check icon when text is successfully copied to clipboard', async () => {
-      render(<ChatMessage message={testMessages.copyTest} />);
+      render(<ChatMessage message={testMessages.copyTest} />, {
+        wrapper: TestWrapper,
+      });
 
       const copyButton = screen.getByRole('button', {
         name: /Copy to clipboard/,
@@ -115,7 +132,9 @@ describe('ChatMessage component', () => {
     it('should return to copy icon after 3 seconds of successful copy', async () => {
       vi.useFakeTimers();
 
-      render(<ChatMessage message={testMessages.copyTest} />);
+      render(<ChatMessage message={testMessages.copyTest} />, {
+        wrapper: TestWrapper,
+      });
 
       const copyButton = screen.getByRole('button', {
         name: /Copy to clipboard/,
@@ -132,7 +151,9 @@ describe('ChatMessage component', () => {
     });
 
     it('should remove thinking content before copying to clipboard', async () => {
-      render(<ChatMessage message={testMessages.withThinking} />);
+      render(<ChatMessage message={testMessages.withThinking} />, {
+        wrapper: TestWrapper,
+      });
 
       const copyButton = screen.getByRole('button', {
         name: /Copy to clipboard/,
@@ -148,7 +169,9 @@ describe('ChatMessage component', () => {
     });
 
     it('should handle message with only thinking content', async () => {
-      render(<ChatMessage message={testMessages.onlyThinking} />);
+      render(<ChatMessage message={testMessages.onlyThinking} />, {
+        wrapper: TestWrapper,
+      });
 
       const copyButton = screen.getByRole('button', {
         name: /Copy to clipboard/,

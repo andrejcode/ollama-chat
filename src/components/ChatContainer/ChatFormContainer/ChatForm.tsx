@@ -1,8 +1,8 @@
 import { SendHorizonal } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import useMessageContext from '@/hooks/useMessageContext.ts';
 
 interface ChatFormProps {
-  isStreamComplete: boolean;
   userInput: string;
   isLoadingAssistantMessage: boolean;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -10,12 +10,13 @@ interface ChatFormProps {
 }
 
 export default function ChatForm({
-  isStreamComplete,
   userInput,
   isLoadingAssistantMessage,
   onSubmit,
   onChange,
 }: ChatFormProps) {
+  const { isStreamMessageComplete } = useMessageContext();
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -65,7 +66,7 @@ export default function ChatForm({
       event.preventDefault();
 
       // If loading is in progress or the stream is not complete, don't submit
-      if (isLoadingAssistantMessage || !isStreamComplete) {
+      if (isLoadingAssistantMessage || !isStreamMessageComplete) {
         return;
       }
 
@@ -92,7 +93,7 @@ export default function ChatForm({
         disabled={
           isLoadingAssistantMessage ||
           userInput.length === 0 ||
-          !isStreamComplete
+          !isStreamMessageComplete
         }
         className="cursor-pointer rounded-full bg-neutral-800 p-2.5 text-neutral-100 shadow-md transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 disabled:cursor-not-allowed dark:bg-neutral-100 dark:text-neutral-800 dark:hover:bg-neutral-200"
       >

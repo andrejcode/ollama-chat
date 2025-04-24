@@ -6,6 +6,7 @@ import {
   THINK_TAG_SPLIT_PATTERN,
 } from '@/constants';
 import ChevronToggleButton from '@/components/ChevronToggleButton';
+import useMessageContext from '@/hooks/useMessageContext.ts';
 import Markdown, { type Components } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -22,6 +23,8 @@ export default function MarkdownRenderer({ content }: { content: string }) {
   );
   const [isThinking, setIsThinking] = useState<boolean>(false);
 
+  const { isStreamMessageComplete } = useMessageContext();
+
   // Process the content to wrap \boxed{} expressions in $ signs for KaTeX rendering
   const wrapBoxedMathInDollarSigns = (text: string) => {
     return text.replace(/\\boxed\{[^}]+}/g, (match) => {
@@ -36,17 +39,17 @@ export default function MarkdownRenderer({ content }: { content: string }) {
   const splitSegments = content.split(THINK_TAG_SPLIT_PATTERN);
 
   useEffect(() => {
-    const hasOpeningThinkTag = OPENING_THINK_TAG_PATTERN.test(content);
+    const firstOpeningThinkTagMatch = content.match(OPENING_THINK_TAG_PATTERN);
     const hasClosingThinkTag = CLOSING_THINK_TAG_PATTERN.test(content);
 
-    if (hasOpeningThinkTag) {
+    if (firstOpeningThinkTagMatch) {
       setIsThinking(true);
     }
 
-    if (hasClosingThinkTag) {
+    if (hasClosingThinkTag || isStreamMessageComplete) {
       setIsThinking(false);
     }
-  }, [content]);
+  }, [content, isStreamMessageComplete]);
 
   const toggleExpand = (segmentIndex: number) => {
     setExpandedStates((prev) => ({
@@ -96,7 +99,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
         // Odd indices correspond to a text inside a <think>-style tag pair
         const isThinkBlock = segmentIndex % 2 === 1;
         if (isThinkBlock) {
-          const isExpanded = expandedStates[segmentIndex];
+          const isExpanded = Boolean(expandedStates[segmentIndex]);
           const isEmpty = processedText.trim() === '';
 
           return (

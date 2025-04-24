@@ -12,6 +12,9 @@ interface MessageContextType {
   isLoadingAssistantMessage: boolean;
   startLoadingAssistantMessage: () => void;
   stopLoadingAssistantMessage: () => void;
+  isStreamMessageComplete: boolean;
+  startStreamMessage: () => void;
+  stopStreamMessage: () => void;
 }
 
 const MessageContext = createContext<MessageContextType | null>(null);

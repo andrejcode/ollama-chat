@@ -5,7 +5,7 @@ import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
 import useMessageContext from '@/hooks/useMessageContext';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 import { generateUniqueId } from '@/utils';
-import { act } from 'react';
+import { act, ReactNode } from 'react';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 
 vi.mock('@/hooks/useMessageContext');
@@ -14,7 +14,7 @@ vi.mock('@/utils', () => ({
   generateUniqueId: vi.fn(),
 }));
 
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
+const TestWrapper = ({ children }: { children: ReactNode }) => {
   return <AlertMessageProvider>{children}</AlertMessageProvider>;
 };
 
@@ -37,6 +37,9 @@ describe('ChatFormContainer component', () => {
     isLoadingAssistantMessage: false,
     startLoadingAssistantMessage: vi.fn(),
     stopLoadingAssistantMessage: vi.fn(),
+    isStreamMessageComplete: true,
+    startStreamMessage: vi.fn(),
+    stopStreamMessage: vi.fn(),
   };
 
   beforeEach(() => {
