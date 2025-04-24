@@ -77,10 +77,10 @@ export default function Chat() {
         <button
           type="button"
           onClick={scrollToBottom}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 transform animate-bounce rounded-full bg-neutral-300 p-2 shadow-lg focus:outline-none focus-visible:ring dark:bg-neutral-600"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 transform animate-bounce cursor-pointer rounded-full bg-neutral-300 p-2 shadow-lg focus:outline-none focus-visible:ring dark:bg-neutral-600"
           aria-label="Scroll to latest message"
         >
-          <ArrowDown />
+          <ArrowDown size={16} />
         </button>
       )}
     </div>
