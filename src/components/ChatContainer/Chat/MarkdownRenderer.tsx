@@ -22,6 +22,17 @@ export default function MarkdownRenderer({ content }: { content: string }) {
   );
   const [isThinking, setIsThinking] = useState<boolean>(false);
 
+  // Process the content to wrap \boxed{} expressions in $ signs for KaTeX rendering
+  const wrapBoxedMathInDollarSigns = (text: string) => {
+    return text.replace(/\\boxed\{[^}]+}/g, (match) => {
+      // Only wrap in $ if not already wrapped
+      if (!match.startsWith('$')) {
+        return `$${match}$`;
+      }
+      return match;
+    });
+  };
+
   const splitSegments = content.split(THINK_TAG_SPLIT_PATTERN);
 
   useEffect(() => {
@@ -79,11 +90,14 @@ export default function MarkdownRenderer({ content }: { content: string }) {
   return (
     <div className="prose dark:prose-invert prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-transparent prose-pre:p-0 max-w-4xl">
       {splitSegments.map((segmentText, segmentIndex) => {
-        // Odd indices correspond to text inside a <think>-style tag pair
+        // Process the content before rendering
+        const processedText = wrapBoxedMathInDollarSigns(segmentText);
+
+        // Odd indices correspond to a text inside a <think>-style tag pair
         const isThinkBlock = segmentIndex % 2 === 1;
         if (isThinkBlock) {
-          const isExpanded = !!expandedStates[segmentIndex];
-          const isEmpty = segmentText.trim() === '';
+          const isExpanded = expandedStates[segmentIndex];
+          const isEmpty = processedText.trim() === '';
 
           return (
             <div key={segmentIndex}>
@@ -106,7 +120,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
               />
               {isExpanded && !isEmpty && (
                 <div className="text-neutral-italic dark:text-neutral-400">
-                  <Markdown {...markdownProps}>{segmentText}</Markdown>
+                  <Markdown {...markdownProps}>{processedText}</Markdown>
                 </div>
               )}
             </div>
@@ -115,7 +129,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
 
         return (
           <Markdown key={segmentIndex} {...markdownProps}>
-            {segmentText}
+            {processedText}
           </Markdown>
         );
       })}
