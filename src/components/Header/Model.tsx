@@ -5,7 +5,7 @@ import LoadingSpinner from '../ui/LoadingSpinner';
 import Button from '../ui/Button';
 import ChevronToggleButton from '../ChevronToggleButton';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
-import useModelContext from '@/hooks/useModelContext';
+import useModelContext from '@/hooks/useModelContext.ts';
 
 export default function Model() {
   const [isReloading, setIsReloading] = useState(false);
