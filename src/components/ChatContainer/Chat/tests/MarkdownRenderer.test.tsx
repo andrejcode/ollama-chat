@@ -1,6 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import MarkdownRenderer from '../MarkdownRenderer';
+import useColorScheme from '@/hooks/useColorScheme.ts';
+
+vi.mock('@/hooks/useColorScheme', () => ({
+  default: vi.fn(),
+}));
 
 describe('MarkdownRenderer component', () => {
   it('renders plain text correctly', () => {
@@ -62,5 +67,21 @@ describe('MarkdownRenderer component', () => {
 
     expect(screen.queryByText("alert('xss')")).not.toBeInTheDocument();
     expect(screen.getByText('Safe text')).toBeInTheDocument();
+  });
+
+  it('applies different syntax highlighter themes based on color scheme', () => {
+    vi.mocked(useColorScheme).mockReturnValue(false);
+    const { unmount } = render(
+      <MarkdownRenderer content="```javascript\nconst x = 1;\n```" />,
+    );
+
+    expect(screen.getByText(/const x = 1;/)).toBeInTheDocument();
+
+    unmount();
+
+    vi.mocked(useColorScheme).mockReturnValue(true);
+    render(<MarkdownRenderer content="```javascript\nconst x = 1;\n```" />);
+
+    expect(screen.getByText(/const x = 1;/)).toBeInTheDocument();
   });
 });
