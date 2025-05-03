@@ -66,10 +66,10 @@ export default function ChatMessage({
   return (
     <div
       className={clsx(
-        'relative m-3',
+        'relative',
         message.role === 'user'
           ? 'self-end rounded-2xl bg-neutral-200 px-4 py-2 whitespace-pre-wrap dark:bg-neutral-700'
-          : 'self-start',
+          : 'w-full max-w-4xl self-start',
       )}
       role="listitem"
       aria-label={

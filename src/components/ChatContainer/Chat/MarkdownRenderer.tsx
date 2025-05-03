@@ -34,21 +34,41 @@ export default function MarkdownRenderer({
     }) => {
       const match = /language-(\w+)/.exec(className || '');
       return match ? (
-        <SyntaxHighlighter
-          {...rest}
-          PreTag="div"
-          language={match[1]}
-          style={isDarkMode ? oneDark : oneLight}
-          showLineNumbers={true}
-        >
-          {String(children).replace(/\n$/, '')}
-        </SyntaxHighlighter>
+        <div className="w-full rounded-lg border border-neutral-200 dark:border-none">
+          <div className="bg-neutral-200 px-2 py-1 dark:bg-neutral-700">
+            <div className="text-neutral-800 dark:text-neutral-100">
+              {match[1]}
+            </div>
+          </div>
+          <SyntaxHighlighter
+            {...rest}
+            PreTag="div"
+            language={match[1]}
+            style={isDarkMode ? oneDark : oneLight}
+            customStyle={{
+              width: '100%',
+              minWidth: '100%',
+              margin: 0,
+              borderTopLeftRadius: 0,
+              borderTopRightRadius: 0,
+              borderBottomLeftRadius: '8px',
+              borderBottomRightRadius: '8px',
+            }}
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        </div>
       ) : (
         <code {...rest} className={className}>
           {children}
         </code>
       );
     },
+    pre: ({ children, ...rest }) => (
+      <pre className="w-full min-w-full" {...rest}>
+        {children}
+      </pre>
+    ),
   };
 
   const markdownProps = {
@@ -60,9 +80,9 @@ export default function MarkdownRenderer({
   return (
     <div
       className={clsx(
-        'prose dark:prose-invert max-w-4xl',
+        'prose dark:prose-invert w-full min-w-full',
         "prose-code:before:content-[''] prose-code:after:content-['']",
-        'prose-pre:bg-transparent prose-pre:p-0',
+        'prose-pre:bg-transparent prose-pre:p-0 prose-pre:w-full',
         className,
       )}
     >
