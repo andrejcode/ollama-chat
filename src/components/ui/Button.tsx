@@ -24,7 +24,9 @@ export default function Button({
       type={type}
       onClick={onClick}
       className={clsx(
-        'rounded-lg p-1 transition-colors duration-200 hover:bg-neutral-300 focus:outline-none focus-visible:ring dark:hover:bg-neutral-600',
+        'rounded-lg p-1 transition-colors duration-200',
+        'focus:outline-none focus-visible:ring',
+        'hover:bg-neutral-300 dark:hover:bg-neutral-600',
         disabled ? 'cursor-default' : 'cursor-pointer',
         className,
       )}

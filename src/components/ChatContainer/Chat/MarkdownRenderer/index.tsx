@@ -1,11 +1,6 @@
 import clsx from 'clsx';
-import useColorScheme from '@/hooks/useColorScheme.ts';
 import Markdown, { type Components } from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import {
-  oneDark,
-  oneLight,
-} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import CodeBlock from '@/components/ChatContainer/Chat/MarkdownRenderer/CodeBlock.tsx';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeRaw from 'rehype-raw';
@@ -22,8 +17,6 @@ export default function MarkdownRenderer({
   content,
   className,
 }: MarkdownRendererProps) {
-  const isDarkMode = useColorScheme();
-
   const markdownComponents: Components = {
     code: ({
       children,
@@ -34,30 +27,9 @@ export default function MarkdownRenderer({
     }) => {
       const match = /language-(\w+)/.exec(className || '');
       return match ? (
-        <div className="w-full rounded-lg border border-neutral-200 dark:border-none">
-          <div className="bg-neutral-200 px-2 py-1 dark:bg-neutral-700">
-            <div className="text-neutral-800 dark:text-neutral-100">
-              {match[1]}
-            </div>
-          </div>
-          <SyntaxHighlighter
-            {...rest}
-            PreTag="div"
-            language={match[1]}
-            style={isDarkMode ? oneDark : oneLight}
-            customStyle={{
-              width: '100%',
-              minWidth: '100%',
-              margin: 0,
-              borderTopLeftRadius: 0,
-              borderTopRightRadius: 0,
-              borderBottomLeftRadius: '8px',
-              borderBottomRightRadius: '8px',
-            }}
-          >
-            {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
-        </div>
+        <CodeBlock language={match[1]} {...rest}>
+          {children}
+        </CodeBlock>
       ) : (
         <code {...rest} className={className}>
           {children}

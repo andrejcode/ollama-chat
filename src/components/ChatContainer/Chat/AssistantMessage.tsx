@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import MarkdownRenderer from '@/components/ChatContainer/Chat/MarkdownRenderer.tsx';
+import MarkdownRenderer from '@/components/ChatContainer/Chat/MarkdownRenderer';
 import ChevronToggleButton from '@/components/ChevronToggleButton';
 import useMessageContext from '@/hooks/useMessageContext.ts';
 import {

@@ -1,13 +1,11 @@
 import clsx from 'clsx';
-import { useState, useEffect, useCallback } from 'react';
-import { Copy, Check, X } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { useState, useCallback } from 'react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AssistantMessage from '@/components/ChatContainer/Chat/AssistantMessage.tsx';
+import useCopyText from '@/hooks/useCopyText.ts';
 import { removeThinkingContent } from '@/utils';
 import type { Message } from '@shared/types';
-
-type CopyStatus = 'idle' | 'copied' | 'error';
+import CopyTextButton from '@/components/CopyTextButton.tsx';
 
 interface ChatMessageProps {
   message: Message;
@@ -18,7 +16,7 @@ export default function ChatMessage({
   message,
   isLoadingAssistantMessage,
 }: ChatMessageProps) {
-  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
+  const { copyStatus, handleCopy } = useCopyText();
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isModelThinking, setIsModelThinking] = useState<boolean>(false);
 
@@ -29,39 +27,6 @@ export default function ChatMessage({
   const stopThinking = useCallback(() => {
     setIsModelThinking(false);
   }, []);
-
-  const handleCopy = (text: string) => {
-    const cleanedText = removeThinkingContent(text);
-
-    navigator.clipboard
-      .writeText(cleanedText)
-      .then(() => {
-        setCopyStatus('copied');
-      })
-      .catch(() => {
-        setCopyStatus('error');
-      });
-  };
-
-  useEffect(() => {
-    if (copyStatus === 'copied' || copyStatus === 'error') {
-      const timer = setTimeout(() => {
-        setCopyStatus('idle');
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [copyStatus]);
-
-  const renderIcon = () => {
-    if (copyStatus === 'copied') {
-      return <Check size={14} />;
-    } else if (copyStatus === 'error') {
-      return <X size={14} />;
-    } else {
-      return <Copy size={14} />;
-    }
-  };
 
   return (
     <div
@@ -95,24 +60,18 @@ export default function ChatMessage({
       )}
 
       {!isLoadingAssistantMessage && !isModelThinking && (
-        <Button
+        <CopyTextButton
           className={clsx(
-            'absolute -bottom-6 rounded transition-opacity duration-500 ease-in-out focus:outline-none focus-visible:ring',
+            'absolute -bottom-5',
             message.role === 'user' ? 'right-0' : 'left-0',
             isHovered ? 'opacity-100' : 'opacity-0',
           )}
-          onClick={() => handleCopy(message.content)}
-          aria-label={
-            copyStatus === 'copied'
-              ? 'Copied to clipboard'
-              : copyStatus === 'error'
-                ? 'Failed to copy'
-                : 'Copy to clipboard'
-          }
-          title="Copy to clipboard"
-        >
-          {renderIcon()}
-        </Button>
+          copyStatus={copyStatus}
+          onClick={() => {
+            const cleanedText = removeThinkingContent(message.content);
+            handleCopy(cleanedText);
+          }}
+        />
       )}
     </div>
   );

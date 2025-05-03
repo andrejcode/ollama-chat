@@ -47,7 +47,7 @@ export default function Chat() {
     <div className="relative h-full w-full">
       <div ref={chatContainerRef} className="h-full w-full overflow-y-auto">
         <section
-          className="mx-auto my-4 flex max-w-4xl flex-col gap-3 px-3"
+          className="mx-auto my-4 flex max-w-4xl flex-col gap-4 px-3"
           role="log"
           aria-label="Chat messages"
           aria-live="polite"
