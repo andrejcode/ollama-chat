@@ -81,7 +81,7 @@ export default function AssistantMessage({
           {isExpanded && !isEmpty && (
             <MarkdownRenderer
               content={processedText}
-              className="text-neutral-italic mt-2 dark:text-neutral-400"
+              className="text-neutral-italic mt-2 text-neutral-500 dark:text-neutral-400"
             />
           )}
         </div>
