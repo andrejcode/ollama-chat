@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import SettingsModalContext from '@/contexts/SettingsModalContext';
 
-export default function SettingsModalProivder({
+export default function SettingsModalProvider({
   children,
 }: {
   children: React.ReactNode;

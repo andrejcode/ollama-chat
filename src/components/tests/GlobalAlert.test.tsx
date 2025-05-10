@@ -117,7 +117,7 @@ describe('GlobalAlert component', () => {
     expect(alertElement).toHaveClass('top-0');
     expect(alertElement).toHaveClass('z-50');
 
-    // Conditional classes for error type
+    // Conditional classes for an error type
     expect(alertElement).toHaveClass('border-red-800');
     expect(alertElement).toHaveClass('bg-red-100');
     expect(alertElement).toHaveClass('text-red-800');

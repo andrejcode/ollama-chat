@@ -13,7 +13,7 @@ export function generateUniqueId() {
 }
 
 // We are considering here that reasoning models will
-// always return both opening and closing tags
+// always return both opening and closing tags,
 // and we remove the content in between
 export const removeThinkingContent = (text: string): string => {
   return text.replace(THINK_TAG_REGEX, '').trim();

@@ -22,7 +22,7 @@ export default function HealthProvider({
         if (status) {
           setHealthStatus(status);
 
-          // Show error message if health check failed
+          // Show an error message if a health check failed
           if (!status.ok) {
             updateAlertMessage({
               message: status.message,
