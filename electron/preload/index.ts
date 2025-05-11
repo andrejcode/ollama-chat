@@ -25,7 +25,8 @@ const electronApi: ElectronApi = {
     ipcRenderer.once(IpcChannels.OLLAMA_COMPLETE, boundCallback);
   },
 
-  getSidebarState: () => ipcRenderer.invoke(IpcChannels.GET_IS_SIDEBAR_OPEN),
+  getSidebarState: () =>
+    ipcRenderer.sendSync(IpcChannels.GET_IS_SIDEBAR_OPEN) as boolean,
   setSidebarState: (isOpen: boolean) =>
     ipcRenderer.invoke(IpcChannels.SET_IS_SIDEBAR_OPEN, isOpen),
 

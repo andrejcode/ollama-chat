@@ -4,7 +4,7 @@ export interface ElectronApi {
   onStreamError: (callback: (error: string) => void) => void;
   onStreamComplete: (callback: () => void) => void;
 
-  getSidebarState: () => Promise<boolean>;
+  getSidebarState: () => boolean;
   setSidebarState: (isOpen: boolean) => Promise<void>;
 
   getOllamaUrl: () => Promise<string>;
