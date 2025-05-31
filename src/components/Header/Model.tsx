@@ -51,7 +51,7 @@ export default function Model() {
   if (isReloading) {
     return (
       <Button disabled>
-        <RotateIcon className="animate-spin-once" />
+        <RotateIcon className="animate-spin-once-reverse" />
       </Button>
     );
   }
