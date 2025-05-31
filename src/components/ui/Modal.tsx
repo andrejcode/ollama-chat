@@ -19,7 +19,7 @@ export default function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-40 flex items-center justify-center"
+      className="fixed inset-0 z-40 m-4 flex items-center justify-center"
       onClick={onClose}
     >
       <div className="fixed inset-0 bg-neutral-900/50 dark:bg-neutral-900/80" />

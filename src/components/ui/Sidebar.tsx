@@ -1,10 +1,9 @@
 import useSidebarContext from '@/hooks/useSidebarContext';
 import clsx from 'clsx';
-import { PanelLeft } from 'lucide-react';
-import Button from './Button';
+import SidebarButton from '../Header/SidebarButton';
 
 export default function Sidebar() {
-  const { isSidebarOpen, closeSidebar } = useSidebarContext();
+  const { isSidebarOpen } = useSidebarContext();
 
   return (
     <aside
@@ -13,10 +12,8 @@ export default function Sidebar() {
         isSidebarOpen ? 'w-80' : 'w-0',
       )}
     >
-      <div className="p-4">
-        <Button onClick={() => closeSidebar()}>
-          <PanelLeft />
-        </Button>
+      <div className="flex h-[70px] items-center p-4">
+        <SidebarButton showOnlyWhenClosed={false} />
       </div>
     </aside>
   );
