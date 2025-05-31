@@ -1,7 +1,7 @@
-import Modal from '../ui/Modal';
-import ThemeSettings from './ThemeSettings';
-import OllamaUrlSettings from './OllamaUrlSettings';
 import useSettingsModalContext from '@/hooks/useSettingsModalContext';
+import Modal from '../ui/Modal';
+import OllamaUrlSettings from './OllamaUrlSettings';
+import ThemeSettings from './ThemeSettings';
 
 export default function SettingsModal() {
   const { isOpen, closeModal } = useSettingsModalContext();

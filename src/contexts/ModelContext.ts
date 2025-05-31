@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import { Model } from '@shared/types';
+import { createContext } from 'react';
 
 interface ModelContextType {
   isLoading: boolean;

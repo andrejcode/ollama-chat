@@ -1,6 +1,6 @@
+import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import Button from './Button';
-import { X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;

@@ -1,11 +1,11 @@
+import CopyTextButton from '@/components/CopyTextButton.tsx';
+import useColorScheme from '@/hooks/useColorScheme.ts';
+import useCopyText from '@/hooks/useCopyText.ts';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import {
   oneDark,
   oneLight,
 } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import CopyTextButton from '@/components/CopyTextButton.tsx';
-import useColorScheme from '@/hooks/useColorScheme.ts';
-import useCopyText from '@/hooks/useCopyText.ts';
 
 interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
   language: string;

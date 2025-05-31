@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import SettingsModalContext from '@/contexts/SettingsModalContext';
+import { useContext } from 'react';
 
 export default function useSettingsModalContext() {
   const context = useContext(SettingsModalContext);

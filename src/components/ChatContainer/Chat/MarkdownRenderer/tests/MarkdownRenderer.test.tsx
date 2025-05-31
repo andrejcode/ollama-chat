@@ -1,7 +1,7 @@
+import useColorScheme from '@/hooks/useColorScheme.ts';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import MarkdownRenderer from '../index.tsx';
-import useColorScheme from '@/hooks/useColorScheme.ts';
 
 vi.mock('@/hooks/useColorScheme', () => ({
   default: vi.fn(),

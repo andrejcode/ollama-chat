@@ -1,8 +1,8 @@
-import { act, fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import ChatMessage from '../ChatMessage';
-import type { Message } from '@shared/types';
 import MessageProvider from '@/providers/MessageProvider.tsx';
+import type { Message } from '@shared/types';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import ChatMessage from '../ChatMessage';
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   return <MessageProvider>{children}</MessageProvider>;

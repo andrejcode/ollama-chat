@@ -1,11 +1,11 @@
-import clsx from 'clsx';
-import { useState } from 'react';
-import { RotateCcw as RotateIcon } from 'lucide-react';
-import LoadingSpinner from '../ui/LoadingSpinner';
-import Button from '../ui/Button';
-import ChevronToggleButton from '../ChevronToggleButton';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 import useModelContext from '@/hooks/useModelContext.ts';
+import clsx from 'clsx';
+import { RotateCcw as RotateIcon } from 'lucide-react';
+import { useState } from 'react';
+import ChevronToggleButton from '../ChevronToggleButton';
+import Button from '../ui/Button';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
 export default function Model() {
   const [isReloading, setIsReloading] = useState(false);

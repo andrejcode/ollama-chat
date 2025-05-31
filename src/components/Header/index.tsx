@@ -1,5 +1,5 @@
-import SettingsButton from './SettingsButton';
 import Model from './Model';
+import SettingsButton from './SettingsButton';
 import SidebarButton from './SidebarButton';
 
 export default function Header() {

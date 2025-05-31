@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import type { CopyStatus } from '@/types';
+import { useState } from 'react';
 
 export default function useCopyText() {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');

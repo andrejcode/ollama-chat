@@ -1,6 +1,6 @@
 import HealthContext from '@/contexts/HealthContext';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function HealthProvider({
   children,

@@ -1,6 +1,6 @@
-import { ipcRenderer, contextBridge } from 'electron';
-import type { Message, Model, ElectronApi } from '@shared/types';
 import { IpcChannels } from '@electron/types';
+import type { ElectronApi, Message, Model } from '@shared/types';
+import { contextBridge, ipcRenderer } from 'electron';
 
 const electronApi: ElectronApi = {
   sendPrompt: (messages: Message[]) =>

@@ -1,7 +1,7 @@
+import useChat from '@/hooks/useChat';
 import clsx from 'clsx';
 import Chat from './Chat';
 import ChatFormContainer from './ChatFormContainer';
-import useChat from '@/hooks/useChat';
 
 export default function ChatContainer() {
   const { isChatStarted, startChat } = useChat();

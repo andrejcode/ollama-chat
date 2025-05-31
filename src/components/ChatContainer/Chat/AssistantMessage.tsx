@@ -1,14 +1,14 @@
-import clsx from 'clsx';
-import { useEffect, useState } from 'react';
 import MarkdownRenderer from '@/components/ChatContainer/Chat/MarkdownRenderer';
 import ChevronToggleButton from '@/components/ChevronToggleButton';
-import useMessageContext from '@/hooks/useMessageContext.ts';
 import {
   CLOSING_THINK_TAG_PATTERN,
   OPENING_THINK_TAG_PATTERN,
   THINK_TAG_SPLIT_PATTERN,
 } from '@/constants';
+import useMessageContext from '@/hooks/useMessageContext.ts';
 import { wrapBoxedMathInDollarSigns } from '@/utils';
+import clsx from 'clsx';
+import { useEffect, useState } from 'react';
 
 export default function AssistantMessage({
   content,

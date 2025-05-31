@@ -1,8 +1,8 @@
 import { app, BrowserWindow } from 'electron';
-import createWindow from './window';
 import { initializeOllama, registerOllamaHandlers } from '../ollama';
-import { initializeTheme, registerThemeHandlers } from './theme';
 import { registerSidebarHandlers } from '../sidebar';
+import { initializeTheme, registerThemeHandlers } from './theme';
+import createWindow from './window';
 
 let window: BrowserWindow | null;
 

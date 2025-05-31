@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import SettingsModal from '../index';
 import useSettingsModalContext from '@/hooks/useSettingsModalContext';
-import { createMockElectronApi } from '@/tests/utils/mocks';
 import AlertMessageProvider from '@/providers/AlertMessageProvider';
+import { createMockElectronApi } from '@/tests/utils/mocks';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import SettingsModal from '../index';
 
 vi.mock('@/hooks/useSettingsModalContext', () => ({
   default: vi.fn(),

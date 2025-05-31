@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
 import type { Theme } from '@shared/types';
+import { useEffect, useState } from 'react';
 import ThemeButton from './ThemeButton';
 
 export default function ThemeSettings() {

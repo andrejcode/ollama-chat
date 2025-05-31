@@ -1,6 +1,6 @@
-import { ReactNode, useState } from 'react';
-import { Message } from '@shared/types';
 import MessageContext from '@/contexts/MessageContext';
+import { Message } from '@shared/types';
+import { ReactNode, useState } from 'react';
 
 export default function MessageProvider({ children }: { children: ReactNode }) {
   const [messages, setMessages] = useState<Message[]>([]);

@@ -1,9 +1,9 @@
-import { describe, it, expect } from 'vitest';
 import {
   getLastAssistantMessageIndex,
   wrapBoxedMathInDollarSigns,
 } from '@/utils';
 import type { Message } from '@shared/types';
+import { describe, expect, it } from 'vitest';
 
 describe('getLastAssistantMessageIndex', () => {
   it('should return -1 for empty array', () => {

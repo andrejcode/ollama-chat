@@ -1,5 +1,5 @@
-import { createContext } from 'react';
 import type { Message } from '@shared/types';
+import { createContext } from 'react';
 
 interface MessageContextType {
   messages: Message[];

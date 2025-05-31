@@ -1,12 +1,12 @@
-import clsx from 'clsx';
-import Markdown, { type Components } from 'react-markdown';
 import CodeBlock from '@/components/ChatContainer/Chat/MarkdownRenderer/CodeBlock.tsx';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
+import clsx from 'clsx';
+import 'katex/dist/katex.min.css';
+import Markdown, { type Components } from 'react-markdown';
+import rehypeKatex from 'rehype-katex';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 
 interface MarkdownRendererProps {
   content: string;

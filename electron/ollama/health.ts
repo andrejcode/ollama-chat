@@ -1,7 +1,7 @@
 import { getStoreValue, setStoreValue } from '@electron/store';
+import { IpcChannels } from '@electron/types';
 import { BrowserWindow } from 'electron';
 import { checkOllamaHealth, fetchModels } from './api';
-import { IpcChannels } from '@electron/types';
 
 export async function performHealthCheckAndUpdateModels(
   window: BrowserWindow | null,

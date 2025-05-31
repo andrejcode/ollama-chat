@@ -1,9 +1,9 @@
-import clsx from 'clsx';
-import { useRef, useState, useEffect, useCallback } from 'react';
-import { ArrowDown } from 'lucide-react';
-import ChatMessage from './ChatMessage';
 import useMessageContext from '@/hooks/useMessageContext';
 import { getLastAssistantMessageIndex } from '@/utils';
+import clsx from 'clsx';
+import { ArrowDown } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import ChatMessage from './ChatMessage';
 
 export default function Chat() {
   const [showScrollButton, setShowScrollButton] = useState(false);

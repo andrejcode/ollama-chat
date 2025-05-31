@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function WelcomeTitle({
   isChatStarted,

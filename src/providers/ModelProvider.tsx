@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import type { Model } from '@shared/types';
 import ModelContext from '@/contexts/ModelContext';
+import type { Model } from '@shared/types';
+import { useEffect, useState } from 'react';
 
 export default function ModelProvider({
   children,

@@ -1,8 +1,8 @@
-import Sidebar from './ui/Sidebar';
-import Header from './Header';
-import GlobalAlert from './GlobalAlert';
 import ChatContainer from './ChatContainer';
+import GlobalAlert from './GlobalAlert';
+import Header from './Header';
 import SettingsModal from './SettingsModal';
+import Sidebar from './ui/Sidebar';
 
 export default function App() {
   return (

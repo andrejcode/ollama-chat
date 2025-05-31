@@ -1,7 +1,7 @@
+import useSidebarContext from '@/hooks/useSidebarContext';
+import clsx from 'clsx';
 import { PanelLeft } from 'lucide-react';
 import Button from './Button';
-import clsx from 'clsx';
-import useSidebarContext from '@/hooks/useSidebarContext';
 
 export default function Sidebar() {
   const { isSidebarOpen, closeSidebar } = useSidebarContext();

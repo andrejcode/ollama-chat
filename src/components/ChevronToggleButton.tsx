@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import Button from './ui/Button';
 import { ChevronDown as ChevronIcon } from 'lucide-react';
+import Button from './ui/Button';
 
 interface ChevronToggleButtonProps {
   buttonText: string;

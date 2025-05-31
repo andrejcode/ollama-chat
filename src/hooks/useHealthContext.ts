@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import HealthContext from '@/contexts/HealthContext';
+import { useContext } from 'react';
 
 export default function useHealthContext() {
   const context = useContext(HealthContext);

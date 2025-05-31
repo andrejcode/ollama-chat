@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import SettingsModalContext from '@/contexts/SettingsModalContext';
+import { useState } from 'react';
 
 export default function SettingsModalProvider({
   children,

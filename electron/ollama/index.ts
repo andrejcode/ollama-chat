@@ -1,10 +1,10 @@
-import { IpcChannels, type OllamaStreamResponse } from '../types';
+import { getStoreValue, setStoreValue } from '@electron/store';
 import type { Message } from '@shared/types';
-import { BrowserWindow, ipcMain } from 'electron';
 import { wrapAsync } from '@shared/utils';
+import { BrowserWindow, ipcMain } from 'electron';
+import { IpcChannels, type OllamaStreamResponse } from '../types';
 import { processNDJSONStream } from '../utils';
 import { fetchChatStream } from './api';
-import { getStoreValue, setStoreValue } from '@electron/store';
 import { performHealthCheckAndUpdateModels } from './health';
 
 export function registerOllamaHandlers() {

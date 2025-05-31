@@ -1,12 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import AlertMessageProvider from '@/providers/AlertMessageProvider';
 import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
-import useMessageContext from '@/hooks/useMessageContext';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
-import { generateUniqueId } from '@/utils';
-import { act, ReactNode } from 'react';
+import useMessageContext from '@/hooks/useMessageContext';
+import AlertMessageProvider from '@/providers/AlertMessageProvider';
 import { createMockElectronApi } from '@/tests/utils/mocks';
+import { generateUniqueId } from '@/utils';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { act, ReactNode } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/hooks/useMessageContext');
 vi.mock('@/hooks/useAlertMessageContext');

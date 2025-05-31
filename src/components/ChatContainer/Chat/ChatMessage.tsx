@@ -1,11 +1,11 @@
-import clsx from 'clsx';
-import { useState, useCallback } from 'react';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AssistantMessage from '@/components/ChatContainer/Chat/AssistantMessage.tsx';
+import CopyTextButton from '@/components/CopyTextButton.tsx';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import useCopyText from '@/hooks/useCopyText.ts';
 import { removeThinkingContent } from '@/utils';
 import type { Message } from '@shared/types';
-import CopyTextButton from '@/components/CopyTextButton.tsx';
+import clsx from 'clsx';
+import { useCallback, useState } from 'react';
 
 interface ChatMessageProps {
   message: Message;

@@ -1,5 +1,5 @@
-import Store from 'electron-store';
 import type { Model, Theme } from '@shared/types';
+import Store from 'electron-store';
 
 interface StoreSchema {
   isSidebarOpen: boolean;

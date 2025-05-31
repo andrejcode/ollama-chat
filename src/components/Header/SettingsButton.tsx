@@ -1,8 +1,8 @@
+import useSettingsModalContext from '@/hooks/useSettingsModalContext';
 import clsx from 'clsx';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
 import Button from '../ui/Button';
-import useSettingsModalContext from '@/hooks/useSettingsModalContext';
 
 export default function SettingsButton() {
   const [isSpinning, setIsSpinning] = useState(false);

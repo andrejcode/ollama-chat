@@ -1,8 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
 import AssistantMessage from '@/components/ChatContainer/Chat/AssistantMessage.tsx';
 import MessageContext from '@/contexts/MessageContext';
 import type { Message } from '@shared/types';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 interface ChevronToggleButtonProps {
   buttonText: string;

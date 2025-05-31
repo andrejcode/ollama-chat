@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import ModelContext from '@/contexts/ModelContext';
+import { useContext } from 'react';
 
 export default function useModelContext() {
   const context = useContext(ModelContext);

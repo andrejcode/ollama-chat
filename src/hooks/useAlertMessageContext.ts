@@ -1,5 +1,5 @@
-import { useContext } from 'react';
 import AlertMessageContext from '@/contexts/AlertMessageContext';
+import { useContext } from 'react';
 
 export default function useAlertMessageContext() {
   const context = useContext(AlertMessageContext);

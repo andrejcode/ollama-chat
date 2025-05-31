@@ -1,7 +1,7 @@
-import clsx from 'clsx';
 import Button from '@/components/ui/Button.tsx';
-import { Check, Copy, X } from 'lucide-react';
 import type { CopyStatus } from '@/types';
+import clsx from 'clsx';
+import { Check, Copy, X } from 'lucide-react';
 
 interface CopyTextButtonContentProps {
   showCopyText: boolean;
