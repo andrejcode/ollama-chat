@@ -45,11 +45,8 @@ export default function Chat() {
   };
 
   return (
-    <div className="relative h-full w-full">
-      <div
-        ref={chatContainerRef}
-        className="max-h-[calc(100vh-160px)] w-full overflow-y-auto"
-      >
+    <div className="relative min-h-0 w-full flex-1">
+      <div ref={chatContainerRef} className="h-full w-full overflow-y-auto">
         <section
           className="mx-auto my-4 flex max-w-4xl flex-col gap-4 px-3"
           role="log"

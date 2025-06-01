@@ -9,8 +9,10 @@ export default function ChatContainer() {
   return (
     <main
       className={clsx(
-        'flex w-full flex-1 transform flex-col items-center justify-end overflow-hidden px-4 transition-transform duration-500 ease-in-out',
-        isChatStarted ? 'mt-0 translate-y-0' : 'mt-20 -translate-y-1/2',
+        'flex w-full flex-1 transform flex-col items-center overflow-hidden px-4 transition-transform duration-500 ease-in-out',
+        isChatStarted
+          ? 'mt-0 translate-y-0'
+          : 'mt-20 -translate-y-1/2 justify-end',
       )}
     >
       {isChatStarted && <Chat />}
