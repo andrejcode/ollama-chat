@@ -1,5 +1,5 @@
 import { getStoreValue, setStoreValue } from '@electron/store';
-import { Message, Model } from '@shared/types';
+import type { Message, Model } from '@shared/types';
 
 export async function fetchChatStream(
   messages: Message[],
