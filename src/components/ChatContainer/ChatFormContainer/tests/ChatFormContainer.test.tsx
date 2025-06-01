@@ -1,5 +1,6 @@
 import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
+import useHealthContext from '@/hooks/useHealthContext';
 import useMessageContext from '@/hooks/useMessageContext';
 import AlertMessageProvider from '@/providers/AlertMessageProvider';
 import { createMockElectronApi } from '@/tests/utils/mocks';
@@ -10,6 +11,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/hooks/useMessageContext');
 vi.mock('@/hooks/useAlertMessageContext');
+vi.mock('@/hooks/useHealthContext');
+vi.mock('@/providers/HealthProvider', () => ({
+  default: ({ children }: { children: ReactNode }) => children,
+}));
 vi.mock('@/utils', () => ({
   generateUniqueId: vi.fn(),
 }));
@@ -42,9 +47,17 @@ describe('ChatFormContainer component', () => {
     stopStreamMessage: vi.fn(),
   };
 
+  const mockHealthContext = {
+    healthStatus: {
+      ok: true,
+      message: 'Ollama is running.',
+    },
+  };
+
   beforeEach(() => {
     vi.mocked(useMessageContext).mockReturnValue(mockMessageContext);
     vi.mocked(useAlertMessageContext).mockReturnValue(mockAlertMessageContext);
+    vi.mocked(useHealthContext).mockReturnValue(mockHealthContext);
 
     mockElectronApi = createMockElectronApi();
     window.electronApi = mockElectronApi;
