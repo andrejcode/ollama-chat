@@ -1,3 +1,4 @@
+import useHealthContext from '@/hooks/useHealthContext';
 import useMessageContext from '@/hooks/useMessageContext.ts';
 import { SendHorizontal } from 'lucide-react';
 import { useEffect, useRef } from 'react';
@@ -16,6 +17,7 @@ export default function ChatForm({
   onChange,
 }: ChatFormProps) {
   const { isStreamMessageComplete } = useMessageContext();
+  const { healthStatus } = useHealthContext();
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -61,12 +63,17 @@ export default function ChatForm({
     }
   }, [userInput]);
 
+  const isSubmitDisabled =
+    isLoadingAssistantMessage ||
+    userInput.trim().length === 0 ||
+    !isStreamMessageComplete ||
+    !healthStatus.ok;
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
 
-      // If loading is in progress or the stream is not complete, don't submit
-      if (isLoadingAssistantMessage || !isStreamMessageComplete) {
+      if (isSubmitDisabled) {
         return;
       }
 
@@ -90,11 +97,7 @@ export default function ChatForm({
       />
       <button
         type="submit"
-        disabled={
-          isLoadingAssistantMessage ||
-          userInput.length === 0 ||
-          !isStreamMessageComplete
-        }
+        disabled={isSubmitDisabled}
         className="cursor-pointer rounded-full bg-neutral-800 p-2.5 text-neutral-100 shadow-md transition-shadow hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 disabled:cursor-not-allowed dark:bg-neutral-100 dark:text-neutral-800 dark:hover:bg-neutral-200"
       >
         <SendHorizontal size={20} />
