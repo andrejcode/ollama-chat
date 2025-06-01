@@ -4,7 +4,7 @@ import SidebarButton from './SidebarButton';
 
 export default function Header() {
   return (
-    <header className="z-10 mb-4 flex h-[70px] items-center justify-between p-4">
+    <header className="z-10 flex h-16 items-center justify-between px-4">
       <div className="flex items-center gap-4">
         <SidebarButton />
         <Model />

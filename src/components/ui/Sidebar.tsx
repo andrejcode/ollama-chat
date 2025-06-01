@@ -12,7 +12,7 @@ export default function Sidebar() {
         isSidebarOpen ? 'w-80' : 'w-0',
       )}
     >
-      <div className="flex h-[70px] items-center p-4">
+      <div className="flex h-16 items-center px-4">
         <SidebarButton showOnlyWhenClosed={false} />
       </div>
     </aside>
