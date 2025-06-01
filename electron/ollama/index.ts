@@ -1,6 +1,5 @@
 import { getStoreValue, setStoreValue } from '@electron/store';
 import type { Message } from '@shared/types';
-import { wrapAsync } from '@shared/utils';
 import { BrowserWindow, ipcMain } from 'electron';
 import { IpcChannels, type OllamaStreamResponse } from '../types';
 import { processNDJSONStream } from '../utils';
@@ -10,33 +9,41 @@ import { performHealthCheckAndUpdateModels } from './health';
 export function registerOllamaHandlers() {
   ipcMain.on(
     IpcChannels.OLLAMA_STREAM,
-    wrapAsync(async (event: Electron.IpcMainEvent, messages: Message[]) => {
-      try {
-        const streamReader = await fetchChatStream(messages);
+    (event: Electron.IpcMainEvent, messages: Message[]) => {
+      (async () => {
+        try {
+          const streamReader = await fetchChatStream(messages);
 
-        await processNDJSONStream(
-          streamReader,
-          (parsedData: OllamaStreamResponse) => {
-            if (!parsedData.done) {
-              event.sender.send(
-                IpcChannels.OLLAMA_RESPONSE,
-                parsedData.message.content,
-              );
-            }
-          },
-          (errorMessage) => {
-            event.sender.send(IpcChannels.OLLAMA_ERROR, errorMessage);
-          },
-          () => {
-            event.sender.send(IpcChannels.OLLAMA_COMPLETE);
-          },
+          await processNDJSONStream(
+            streamReader,
+            (parsedData: OllamaStreamResponse) => {
+              if (!parsedData.done) {
+                event.sender.send(
+                  IpcChannels.OLLAMA_RESPONSE,
+                  parsedData.message.content,
+                );
+              }
+            },
+            (errorMessage) => {
+              event.sender.send(IpcChannels.OLLAMA_ERROR, errorMessage);
+            },
+            () => {
+              event.sender.send(IpcChannels.OLLAMA_COMPLETE);
+            },
+          );
+        } catch {
+          const errorMessage =
+            'Unable to connect to Ollama. Please check that the Ollama app is running on your computer and try again. If the problem persists, try restarting Ollama.';
+          event.sender.send(IpcChannels.OLLAMA_ERROR, errorMessage);
+        }
+      })().catch((error) => {
+        console.error('Unhandled error in OLLAMA_STREAM handler:', error);
+        event.sender.send(
+          IpcChannels.OLLAMA_ERROR,
+          'An unexpected error occurred',
         );
-      } catch {
-        const errorMessage =
-          'Unable to connect to Ollama. Please check that the Ollama app is running on your computer and try again. If the problem persists, try restarting Ollama.';
-        event.sender.send(IpcChannels.OLLAMA_ERROR, errorMessage);
-      }
-    }),
+      });
+    },
   );
 
   ipcMain.handle(IpcChannels.OLLAMA_URL_GET, () => {
