@@ -1,5 +1,4 @@
-import useMessageContext from '@/hooks/useMessageContext';
-import { getLastAssistantMessageIndex } from '@/utils';
+import { useMessageStore } from '@/stores';
 import clsx from 'clsx';
 import { ArrowDown } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -8,7 +7,12 @@ import ChatMessage from './ChatMessage';
 export default function Chat() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { messages, isLoadingAssistantMessage } = useMessageContext();
+
+  const completedMessages = useMessageStore((state) => state.completedMessages);
+  const streamingMessage = useMessageStore((state) => state.streamingMessage);
+  const isLoadingAssistantMessage = useMessageStore(
+    (state) => state.isLoadingAssistantMessage,
+  );
 
   const handleScroll = useCallback(() => {
     const container = chatContainerRef.current;
@@ -33,7 +37,7 @@ export default function Chat() {
 
   useEffect(() => {
     handleScroll();
-  }, [messages, handleScroll]);
+  }, [completedMessages, streamingMessage, handleScroll]);
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -53,24 +57,22 @@ export default function Chat() {
           aria-label="Chat messages"
           aria-live="polite"
         >
-          {messages.map((message, index) => {
-            if (message.role === 'user') {
-              return <ChatMessage key={message.id} message={message} />;
-            } else if (message.role === 'assistant') {
-              const isLastAssistantMessage =
-                index === getLastAssistantMessageIndex(messages);
-              return (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  isLoadingAssistantMessage={
-                    isLastAssistantMessage && isLoadingAssistantMessage
-                  }
-                />
-              );
-            }
-            return null;
-          })}
+          {completedMessages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message}
+              isStreaming={false}
+            />
+          ))}
+
+          {streamingMessage && (
+            <ChatMessage
+              key={streamingMessage.id}
+              message={streamingMessage}
+              isLoadingAssistantMessage={isLoadingAssistantMessage}
+              isStreaming={true}
+            />
+          )}
         </section>
       </div>
 

@@ -1,5 +1,5 @@
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
-import useMessageContext from '@/hooks/useMessageContext';
+import { useMessageStore } from '@/stores';
 import { generateUniqueId } from '@/utils';
 import type { Message } from '@shared/types';
 import { useState } from 'react';
@@ -22,51 +22,46 @@ export default function ChatFormContainer({
     clearAlertMessage: clearErrorMessage,
   } = useAlertMessageContext();
 
-  const {
-    messages,
-    addEmptyAssistantMessage,
-    updateAssistantMessage,
-    addUserMessage,
-    isLoadingAssistantMessage,
-    startLoadingAssistantMessage,
-    stopLoadingAssistantMessage,
-    startStreamMessage,
-    stopStreamMessage,
-  } = useMessageContext();
+  const isLoadingAssistantMessage = useMessageStore(
+    (state) => state.isLoadingAssistantMessage,
+  );
 
   const sendPromptToOllama = (messagesToSend: Message[]) => {
+    const store = useMessageStore.getState();
+
     clearErrorMessage();
-    startLoadingAssistantMessage();
-    startStreamMessage();
+    store.startLoadingAssistantMessage();
+    store.startStreamMessage();
 
     window.electronApi.sendPrompt(messagesToSend);
 
     let firstChunkReceived = false;
     const assistantMessageId = generateUniqueId();
-    addEmptyAssistantMessage(assistantMessageId);
+    store.startAssistantMessage(assistantMessageId);
 
     const handleStreamResponse = (chunk: string) => {
       if (!firstChunkReceived) {
-        stopLoadingAssistantMessage();
+        store.stopLoadingAssistantMessage();
         firstChunkReceived = true;
       }
 
-      updateAssistantMessage(assistantMessageId, chunk);
+      store.updateStreamingMessage(chunk);
     };
 
     const removeStreamListener =
       window.electronApi.onStreamResponse(handleStreamResponse);
 
     window.electronApi.onStreamError((errorMessage: string) => {
-      stopLoadingAssistantMessage();
+      store.stopLoadingAssistantMessage();
+      store.stopStreamMessage();
       updateErrorMessage({ message: errorMessage, type: 'error' });
-      stopStreamMessage();
 
       removeStreamListener();
     });
 
     window.electronApi.onStreamComplete(() => {
-      stopStreamMessage();
+      store.stopStreamMessage();
+      store.completeStreamingMessage();
 
       removeStreamListener();
     });
@@ -76,16 +71,21 @@ export default function ChatFormContainer({
     event.preventDefault();
     if (userInput.trim()) {
       const userMessageId = generateUniqueId();
-      addUserMessage(userMessageId, userInput);
+      const store = useMessageStore.getState();
+
+      store.addUserMessage(userMessageId, userInput);
 
       const newMessage = {
         id: userMessageId,
         role: 'user',
         content: userInput,
       };
-      const updatedMessages = [...messages, newMessage];
 
-      sendPromptToOllama(updatedMessages);
+      const allMessages = store.streamingMessage
+        ? [...store.completedMessages, store.streamingMessage, newMessage]
+        : [...store.completedMessages, newMessage];
+
+      sendPromptToOllama(allMessages);
       setUserInput('');
       onChatStart();
     }

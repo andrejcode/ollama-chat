@@ -5,16 +5,18 @@ import useCopyText from '@/hooks/useCopyText.ts';
 import { removeThinkingContent } from '@/utils';
 import type { Message } from '@shared/types';
 import clsx from 'clsx';
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 interface ChatMessageProps {
   message: Message;
   isLoadingAssistantMessage?: boolean;
+  isStreaming?: boolean;
 }
 
-export default function ChatMessage({
+const ChatMessage = memo(function ChatMessage({
   message,
   isLoadingAssistantMessage,
+  isStreaming = false,
 }: ChatMessageProps) {
   const { copyStatus, handleCopy } = useCopyText();
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -54,6 +56,7 @@ export default function ChatMessage({
               isModelThinking={isModelThinking}
               onStartThinking={startThinking}
               onStopThinking={stopThinking}
+              isStreaming={isStreaming}
             />
           )}
         </>
@@ -75,4 +78,6 @@ export default function ChatMessage({
       )}
     </div>
   );
-}
+});
+
+export default ChatMessage;

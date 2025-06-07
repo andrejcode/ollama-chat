@@ -4,7 +4,6 @@ import App from './components/App.tsx';
 import './index.css';
 import AlertMessageProvider from './providers/AlertMessageProvider.tsx';
 import HealthProvider from './providers/HealthProvider.tsx';
-import MessageProvider from './providers/MessageProvider.tsx';
 import ModelProvider from './providers/ModelProvider.tsx';
 import SettingsModalProvider from './providers/SettingsModalProvider.tsx';
 import SidebarProvider from './providers/SidebarProvider.tsx';
@@ -16,9 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <AlertMessageProvider>
           <HealthProvider>
             <ModelProvider>
-              <MessageProvider>
-                <App />
-              </MessageProvider>
+              <App />
             </ModelProvider>
           </HealthProvider>
         </AlertMessageProvider>

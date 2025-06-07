@@ -5,27 +5,33 @@ import {
   OPENING_THINK_TAG_PATTERN,
   THINK_TAG_SPLIT_PATTERN,
 } from '@/constants';
-import useMessageContext from '@/hooks/useMessageContext.ts';
+import { useMessageStore } from '@/stores';
 import { wrapBoxedMathInDollarSigns } from '@/utils';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
-export default function AssistantMessage({
-  content,
-  isModelThinking,
-  onStartThinking,
-  onStopThinking,
-}: {
+interface AssistantMessageProps {
   content: string;
+  isStreaming: boolean;
   isModelThinking: boolean;
   onStartThinking: () => void;
   onStopThinking: () => void;
-}) {
+}
+
+export default function AssistantMessage({
+  content,
+  isStreaming,
+  isModelThinking,
+  onStartThinking,
+  onStopThinking,
+}: AssistantMessageProps) {
+  const isStreamMessageComplete = useMessageStore((state) =>
+    isStreaming ? state.isStreamMessageComplete : true,
+  );
+
   const [expandedStates, setExpandedStates] = useState<Record<number, boolean>>(
     {},
   );
-
-  const { isStreamMessageComplete } = useMessageContext();
 
   const splitSegments = content.split(THINK_TAG_SPLIT_PATTERN);
 
