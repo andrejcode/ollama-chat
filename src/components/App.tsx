@@ -1,3 +1,5 @@
+import useHealthInit from '@/hooks/useHealthInit';
+import useModelInit from '@/hooks/useModelInit';
 import ChatContainer from './ChatContainer';
 import GlobalAlert from './GlobalAlert';
 import Header from './Header';
@@ -5,6 +7,9 @@ import SettingsModal from './SettingsModal';
 import Sidebar from './ui/Sidebar';
 
 export default function App() {
+  useHealthInit();
+  useModelInit();
+
   return (
     <div className="flex h-screen bg-neutral-50 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100">
       <Sidebar />

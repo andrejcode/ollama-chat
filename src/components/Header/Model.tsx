@@ -1,5 +1,4 @@
-import useModelContext from '@/hooks/useModelContext.ts';
-import { useAlertMessageStore } from '@/stores';
+import { useAlertMessageStore, useModelStore } from '@/stores';
 import clsx from 'clsx';
 import { RotateCcw as RotateIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -12,7 +11,7 @@ export default function Model() {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { isLoading, currentModel, models, updateCurrentModel } =
-    useModelContext();
+    useModelStore();
   const updateAlertMessage = useAlertMessageStore(
     (state) => state.updateAlertMessage,
   );
@@ -34,7 +33,7 @@ export default function Model() {
   };
 
   const handleModelSelect = (modelName: string) => {
-    updateCurrentModel(modelName);
+    void updateCurrentModel(modelName);
     setShowDropdown(false);
   };
 

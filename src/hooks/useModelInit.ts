@@ -1,17 +1,12 @@
-import ModelContext from '@/contexts/ModelContext';
-import type { Model } from '@shared/types';
-import { useEffect, useState } from 'react';
+import { useModelStore } from '@/stores';
+import { useEffect } from 'react';
 
-export default function ModelProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [models, setModels] = useState<Model[]>([]);
-  const [currentModel, setCurrentModel] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+export default function useModelInit() {
   useEffect(() => {
+    const setModels = useModelStore.getState().setModels;
+    const setCurrentModel = useModelStore.getState().setCurrentModel;
+    const setIsLoading = useModelStore.getState().setIsLoading;
+
     const fetchInitialData = async () => {
       try {
         const fetchedModels = await window.electronApi.getModels();
@@ -43,23 +38,4 @@ export default function ModelProvider({
       removeCurrentModelListener();
     };
   }, []);
-
-  const updateCurrentModel = async (modelName: string) => {
-    const result = await window.electronApi.setCurrentModel(modelName);
-    if (result) {
-      setCurrentModel(modelName);
-    }
-    return result;
-  };
-
-  const value = {
-    isLoading,
-    models,
-    currentModel,
-    updateCurrentModel,
-  };
-
-  return (
-    <ModelContext.Provider value={value}>{children}</ModelContext.Provider>
-  );
 }

@@ -1,6 +1,9 @@
 import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
-import useHealthContext from '@/hooks/useHealthContext';
-import { useAlertMessageStore, useMessageStore } from '@/stores';
+import {
+  useAlertMessageStore,
+  useHealthStore,
+  useMessageStore,
+} from '@/stores';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 import { generateUniqueId } from '@/utils';
 import { fireEvent, render, screen } from '@testing-library/react';
@@ -10,8 +13,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 vi.mock('@/stores', () => ({
   useMessageStore: vi.fn(),
   useAlertMessageStore: vi.fn(),
+  useHealthStore: vi.fn(),
 }));
-vi.mock('@/hooks/useHealthContext');
 vi.mock('@/providers/HealthProvider', () => ({
   default: ({ children }: { children: ReactNode }) => children,
 }));
@@ -45,11 +48,12 @@ describe('ChatFormContainer component', () => {
     stopStreamMessage: vi.fn(),
   };
 
-  const mockHealthContext = {
+  const mockHealthStore = {
     healthStatus: {
       ok: true,
       message: 'Ollama is running.',
     },
+    setHealthStatus: vi.fn(),
   };
 
   beforeEach(() => {
@@ -73,7 +77,12 @@ describe('ChatFormContainer component', () => {
       return mockAlertMessageStore;
     });
 
-    vi.mocked(useHealthContext).mockReturnValue(mockHealthContext);
+    vi.mocked(useHealthStore).mockImplementation((selector) => {
+      if (selector) {
+        return selector(mockHealthStore);
+      }
+      return mockHealthStore;
+    });
 
     mockElectronApi = createMockElectronApi();
     window.electronApi = mockElectronApi;

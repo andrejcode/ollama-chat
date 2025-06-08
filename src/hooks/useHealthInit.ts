@@ -1,22 +1,12 @@
-import HealthContext from '@/contexts/HealthContext';
-import { useAlertMessageStore } from '@/stores';
-import { useEffect, useState } from 'react';
+import { useAlertMessageStore, useHealthStore } from '@/stores';
+import { useEffect } from 'react';
 
-export default function HealthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [healthStatus, setHealthStatus] = useState({
-    ok: false,
-    message: 'Checking Ollama connection...',
-  });
-
-  const updateAlertMessage = useAlertMessageStore(
-    (state) => state.updateAlertMessage,
-  );
-
+export default function useHealthInit() {
   useEffect(() => {
+    const setHealthStatus = useHealthStore.getState().setHealthStatus;
+    const updateAlertMessage =
+      useAlertMessageStore.getState().updateAlertMessage;
+
     // Load the stored health status
     window.electronApi
       .getHealthStatus()
@@ -54,11 +44,5 @@ export default function HealthProvider({
     return () => {
       removeHealthListener();
     };
-  }, [updateAlertMessage]);
-
-  return (
-    <HealthContext.Provider value={{ healthStatus }}>
-      {children}
-    </HealthContext.Provider>
-  );
+  }, []);
 }

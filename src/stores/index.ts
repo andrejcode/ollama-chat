@@ -1,4 +1,6 @@
 export { useAlertMessageStore } from './alertMessageStore';
+export { useHealthStore } from './healthStore';
 export { useMessageStore } from './messageStore';
+export { useModelStore } from './modelStore';
 export { useSettingsModalStore } from './settingsModalStore';
 export { useSidebarStore } from './sidebarStore';

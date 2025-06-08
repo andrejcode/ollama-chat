@@ -1,5 +1,4 @@
-import useHealthContext from '@/hooks/useHealthContext';
-import { useMessageStore } from '@/stores';
+import { useHealthStore, useMessageStore } from '@/stores';
 import { SendHorizontal } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
@@ -19,7 +18,7 @@ export default function ChatForm({
   const isStreamMessageComplete = useMessageStore(
     (state) => state.isStreamMessageComplete,
   );
-  const { healthStatus } = useHealthContext();
+  const healthStatus = useHealthStore((state) => state.healthStatus);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
