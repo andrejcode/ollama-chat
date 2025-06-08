@@ -1,9 +1,9 @@
-import useSidebarContext from '@/hooks/useSidebarContext';
+import { useSidebarStore } from '@/stores';
 import clsx from 'clsx';
 import SidebarButton from '../Header/SidebarButton';
 
 export default function Sidebar() {
-  const { isSidebarOpen } = useSidebarContext();
+  const isSidebarOpen = useSidebarStore((state) => state.isSidebarOpen);
 
   return (
     <aside

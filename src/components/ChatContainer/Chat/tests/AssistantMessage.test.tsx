@@ -1,8 +1,7 @@
 import AssistantMessage from '@/components/ChatContainer/Chat/AssistantMessage.tsx';
-import MessageContext from '@/contexts/MessageContext';
-import type { Message } from '@shared/types';
+import { useMessageStore } from '@/stores';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 interface ChevronToggleButtonProps {
   buttonText: string;
@@ -11,7 +10,6 @@ interface ChevronToggleButtonProps {
   onToggle: () => void;
 }
 
-// Mock the ChevronToggleButton component
 vi.mock('@/components/ChevronToggleButton', () => ({
   default: ({
     buttonText,
@@ -30,46 +28,51 @@ vi.mock('@/components/ChevronToggleButton', () => ({
   ),
 }));
 
-const createMockMessageProvider = (
-  messages: Message[] = [],
+vi.mock('@/stores', () => ({
+  useMessageStore: vi.fn(),
+}));
+
+const createMockMessageStore = (
   isLoadingAssistantMessage = false,
   isStreamMessageComplete = true,
 ) => {
-  // eslint-disable-next-line react/display-name
-  return ({ children }: { children: React.ReactNode }) => (
-    <MessageContext.Provider
-      value={{
-        messages,
-        addEmptyAssistantMessage: vi.fn(),
-        updateAssistantMessage: vi.fn(),
-        addUserMessage: vi.fn(),
-        isLoadingAssistantMessage,
-        startLoadingAssistantMessage: vi.fn(),
-        stopLoadingAssistantMessage: vi.fn(),
-        isStreamMessageComplete,
-        startStreamMessage: vi.fn(),
-        stopStreamMessage: vi.fn(),
-      }}
-    >
-      {children}
-    </MessageContext.Provider>
-  );
+  return {
+    completedMessages: [],
+    streamingMessage: null,
+    isLoadingAssistantMessage,
+    isStreamMessageComplete,
+    addUserMessage: vi.fn(),
+    startAssistantMessage: vi.fn(),
+    updateStreamingMessage: vi.fn(),
+    completeStreamingMessage: vi.fn(),
+    startLoadingAssistantMessage: vi.fn(),
+    stopLoadingAssistantMessage: vi.fn(),
+    startStreamMessage: vi.fn(),
+    stopStreamMessage: vi.fn(),
+  };
 };
-
-const TestWrapper = createMockMessageProvider();
 
 const defaultProps = {
   content: 'Normal content without think tags',
+  isStreaming: false,
   isModelThinking: false,
   onStartThinking: vi.fn(),
   onStopThinking: vi.fn(),
 };
 
 describe('AssistantMessage component', () => {
-  it('renders content without think tags normally', () => {
-    render(<AssistantMessage {...defaultProps} />, {
-      wrapper: TestWrapper,
+  beforeEach(() => {
+    const mockStore = createMockMessageStore();
+    vi.mocked(useMessageStore).mockImplementation((selector) => {
+      if (selector) {
+        return selector(mockStore);
+      }
+      return mockStore;
     });
+  });
+
+  it('renders content without think tags normally', () => {
+    render(<AssistantMessage {...defaultProps} />);
 
     expect(
       screen.getByText('Normal content without think tags'),
@@ -83,7 +86,6 @@ describe('AssistantMessage component', () => {
         {...defaultProps}
         content="Before <think>Thinking content</think> After"
       />,
-      { wrapper: TestWrapper },
     );
 
     expect(screen.getByText('Before')).toBeInTheDocument();
@@ -100,7 +102,6 @@ describe('AssistantMessage component', () => {
         {...defaultProps}
         content="<think>Thinking content</think> Content"
       />,
-      { wrapper: TestWrapper },
     );
 
     const toggleButton = screen.getByTestId('thinking-toggle');
@@ -118,17 +119,21 @@ describe('AssistantMessage component', () => {
   });
 
   it('handles active thinking state without closing think tag', () => {
-    const TestWrapper = createMockMessageProvider([], true, false);
+    const mockStore = createMockMessageStore(true, false);
+    vi.mocked(useMessageStore).mockImplementation((selector) => {
+      if (selector) {
+        return selector(mockStore);
+      }
+      return mockStore;
+    });
 
     render(
       <AssistantMessage
         {...defaultProps}
         content="<think>Active thinking"
+        isStreaming={true}
         isModelThinking={true}
       />,
-      {
-        wrapper: TestWrapper,
-      },
     );
 
     const toggleButton = screen.getByTestId('thinking-toggle');
@@ -143,7 +148,6 @@ describe('AssistantMessage component', () => {
         {...defaultProps}
         content="<think>**Bold thinking** and *italic thinking*</think>"
       />,
-      { wrapper: TestWrapper },
     );
 
     const toggleButton = screen.getByTestId('thinking-toggle');

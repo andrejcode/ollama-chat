@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/require-await */
-import useSettingsModalContext from '@/hooks/useSettingsModalContext';
 import AlertMessageProvider from '@/providers/AlertMessageProvider';
+import { useSettingsModalStore } from '@/stores';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import SettingsModal from '../index';
 
-vi.mock('@/hooks/useSettingsModalContext', () => ({
-  default: vi.fn(),
+vi.mock('@/stores/settingsModalStore', () => ({
+  useSettingsModalStore: vi.fn(),
 }));
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -21,16 +21,18 @@ describe('SettingsModal component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    vi.mocked(useSettingsModalContext).mockReturnValue({
-      isOpen: true,
-      closeModal: mockCloseModal,
-      openModal: vi.fn(),
+    vi.mocked(useSettingsModalStore).mockImplementation((selector) => {
+      const mockState = {
+        isModalOpen: true,
+        closeModal: mockCloseModal,
+        openModal: vi.fn(),
+      };
+      return selector(mockState);
     });
 
     mockElectronApi = createMockElectronApi();
     window.electronApi = mockElectronApi;
 
-    // Set up default mock responses
     mockElectronApi.getTheme.mockResolvedValue('system');
     mockElectronApi.getOllamaUrl.mockResolvedValue('http://localhost:11434');
 
@@ -46,7 +48,7 @@ describe('SettingsModal component', () => {
     }
   });
 
-  it('renders the modal when isOpen is true', async () => {
+  it('renders the modal when isModalOpen is true', async () => {
     await act(async () => {
       render(<SettingsModal />, { wrapper: TestWrapper });
     });
@@ -58,11 +60,14 @@ describe('SettingsModal component', () => {
     expect(screen.getByText('System')).toBeInTheDocument();
   });
 
-  it('does not render content when isOpen is false', async () => {
-    vi.mocked(useSettingsModalContext).mockReturnValue({
-      isOpen: false,
-      closeModal: mockCloseModal,
-      openModal: vi.fn(),
+  it('does not render content when isModalOpen is false', async () => {
+    vi.mocked(useSettingsModalStore).mockImplementation((selector) => {
+      const mockState = {
+        isModalOpen: false,
+        closeModal: mockCloseModal,
+        openModal: vi.fn(),
+      };
+      return selector(mockState);
     });
 
     await act(async () => {

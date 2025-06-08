@@ -1,15 +1,17 @@
 import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
 import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 import useHealthContext from '@/hooks/useHealthContext';
-import useMessageContext from '@/hooks/useMessageContext';
 import AlertMessageProvider from '@/providers/AlertMessageProvider';
+import { useMessageStore } from '@/stores';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 import { generateUniqueId } from '@/utils';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act, ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/hooks/useMessageContext');
+vi.mock('@/stores', () => ({
+  useMessageStore: vi.fn(),
+}));
 vi.mock('@/hooks/useAlertMessageContext');
 vi.mock('@/hooks/useHealthContext');
 vi.mock('@/providers/HealthProvider', () => ({
@@ -34,15 +36,17 @@ describe('ChatFormContainer component', () => {
     clearAlertMessage: vi.fn(),
   };
 
-  const mockMessageContext = {
-    messages: [],
-    addEmptyAssistantMessage: vi.fn(),
-    updateAssistantMessage: vi.fn(),
-    addUserMessage: vi.fn(),
+  const mockMessageStore = {
+    completedMessages: [],
+    streamingMessage: null,
     isLoadingAssistantMessage: false,
+    isStreamMessageComplete: true,
+    addUserMessage: vi.fn(),
+    startAssistantMessage: vi.fn(),
+    updateStreamingMessage: vi.fn(),
+    completeStreamingMessage: vi.fn(),
     startLoadingAssistantMessage: vi.fn(),
     stopLoadingAssistantMessage: vi.fn(),
-    isStreamMessageComplete: true,
     startStreamMessage: vi.fn(),
     stopStreamMessage: vi.fn(),
   };
@@ -55,7 +59,19 @@ describe('ChatFormContainer component', () => {
   };
 
   beforeEach(() => {
-    vi.mocked(useMessageContext).mockReturnValue(mockMessageContext);
+    vi.mocked(useMessageStore).mockImplementation((selector) => {
+      if (selector) {
+        return selector(mockMessageStore);
+      }
+      return mockMessageStore;
+    });
+
+    (
+      useMessageStore as typeof useMessageStore & {
+        getState: () => typeof mockMessageStore;
+      }
+    ).getState = vi.fn().mockReturnValue(mockMessageStore);
+
     vi.mocked(useAlertMessageContext).mockReturnValue(mockAlertMessageContext);
     vi.mocked(useHealthContext).mockReturnValue(mockHealthContext);
 
@@ -101,11 +117,11 @@ describe('ChatFormContainer component', () => {
     fireEvent.submit(form);
 
     expect(mockAlertMessageContext.clearAlertMessage).toHaveBeenCalled();
-    expect(mockMessageContext.addUserMessage).toHaveBeenCalledWith(
+    expect(mockMessageStore.addUserMessage).toHaveBeenCalledWith(
       'user-id',
       'Hello, Ollama!',
     );
-    expect(mockMessageContext.startLoadingAssistantMessage).toHaveBeenCalled();
+    expect(mockMessageStore.startLoadingAssistantMessage).toHaveBeenCalled();
     expect(mockElectronApi.sendPrompt).toHaveBeenCalledWith([
       {
         id: 'user-id',
@@ -154,9 +170,8 @@ describe('ChatFormContainer component', () => {
       capturedStreamHandler('First chunk');
     });
 
-    expect(mockMessageContext.stopLoadingAssistantMessage).toHaveBeenCalled();
-    expect(mockMessageContext.updateAssistantMessage).toHaveBeenCalledWith(
-      'assistant-id',
+    expect(mockMessageStore.stopLoadingAssistantMessage).toHaveBeenCalled();
+    expect(mockMessageStore.updateStreamingMessage).toHaveBeenCalledWith(
       'First chunk',
     );
 
@@ -164,8 +179,7 @@ describe('ChatFormContainer component', () => {
       capturedStreamHandler(' and second chunk');
     });
 
-    expect(mockMessageContext.updateAssistantMessage).toHaveBeenCalledWith(
-      'assistant-id',
+    expect(mockMessageStore.updateStreamingMessage).toHaveBeenCalledWith(
       ' and second chunk',
     );
   });
@@ -192,7 +206,7 @@ describe('ChatFormContainer component', () => {
       capturedErrorHandler('Connection error');
     });
 
-    expect(mockMessageContext.stopLoadingAssistantMessage).toHaveBeenCalled();
+    expect(mockMessageStore.stopLoadingAssistantMessage).toHaveBeenCalled();
     expect(mockAlertMessageContext.updateAlertMessage).toHaveBeenCalledWith({
       message: 'Connection error',
       type: 'error',

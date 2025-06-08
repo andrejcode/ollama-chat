@@ -1,4 +1,4 @@
-import useSidebarContext from '@/hooks/useSidebarContext';
+import { useSidebarStore } from '@/stores';
 import { PanelLeft } from 'lucide-react';
 import Button from '../ui/Button';
 
@@ -9,7 +9,7 @@ interface SidebarButtonProps {
 export default function SidebarButton({
   showOnlyWhenClosed = true,
 }: SidebarButtonProps) {
-  const { isSidebarOpen, openSidebar, closeSidebar } = useSidebarContext();
+  const { isSidebarOpen, openSidebar, closeSidebar } = useSidebarStore();
 
   const handleClick = () => {
     if (isSidebarOpen) {

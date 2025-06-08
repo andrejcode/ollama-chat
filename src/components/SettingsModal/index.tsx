@@ -1,10 +1,11 @@
-import useSettingsModalContext from '@/hooks/useSettingsModalContext';
+import { useSettingsModalStore } from '@/stores';
 import Modal from '../ui/Modal';
 import OllamaUrlSettings from './OllamaUrlSettings';
 import ThemeSettings from './ThemeSettings';
 
 export default function SettingsModal() {
-  const { isOpen, closeModal } = useSettingsModalContext();
+  const isOpen = useSettingsModalStore((state) => state.isModalOpen);
+  const closeModal = useSettingsModalStore((state) => state.closeModal);
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal} title="Settings">
