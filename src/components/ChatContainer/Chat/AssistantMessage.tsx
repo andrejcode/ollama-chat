@@ -3,7 +3,6 @@ import ChevronToggleButton from '@/components/ChevronToggleButton';
 import {
   CLOSING_THINK_TAG_PATTERN,
   OPENING_THINK_TAG_PATTERN,
-  THINK_TAG_SPLIT_PATTERN,
 } from '@/constants';
 import { useMessageStore } from '@/stores';
 import { wrapBoxedMathInDollarSigns } from '@/utils';
@@ -29,44 +28,65 @@ export default function AssistantMessage({
     isStreaming ? state.isStreamMessageComplete : true,
   );
 
-  const [expandedStates, setExpandedStates] = useState<Record<number, boolean>>(
-    {},
-  );
+  const [isThinkingExpanded, setIsThinkingExpanded] = useState<boolean>(false);
 
-  const splitSegments = content.split(THINK_TAG_SPLIT_PATTERN);
+  // Check if content starts with an opening think tag
+  const trimmedContent = content.trimStart();
+  const startsWithThinkTag = OPENING_THINK_TAG_PATTERN.test(trimmedContent);
+
+  // Extract thinking content and remaining content
+  let thinkingContent = '';
+  let remainingContent = content;
+
+  if (startsWithThinkTag) {
+    const firstOpeningMatch = trimmedContent.match(OPENING_THINK_TAG_PATTERN);
+    if (firstOpeningMatch) {
+      const openingTagEnd =
+        firstOpeningMatch.index! + firstOpeningMatch[0].length;
+      const closingMatch = trimmedContent.match(CLOSING_THINK_TAG_PATTERN);
+
+      if (closingMatch) {
+        // Found both opening and closing tags
+        thinkingContent = trimmedContent.slice(
+          openingTagEnd,
+          closingMatch.index,
+        );
+        remainingContent = trimmedContent.slice(
+          closingMatch.index! + closingMatch[0].length,
+        );
+      } else {
+        // Only opening tag found, take everything after it as thinking content
+        thinkingContent = trimmedContent.slice(openingTagEnd);
+        remainingContent = '';
+      }
+    }
+  }
 
   useEffect(() => {
-    const firstOpeningThinkTagMatch = content.match(OPENING_THINK_TAG_PATTERN);
-    const hasClosingThinkTag = CLOSING_THINK_TAG_PATTERN.test(content);
-
-    if (firstOpeningThinkTagMatch) {
+    if (startsWithThinkTag) {
       onStartThinking();
     }
 
+    const hasClosingThinkTag = CLOSING_THINK_TAG_PATTERN.test(content);
     if (hasClosingThinkTag || isStreamMessageComplete) {
       onStopThinking();
     }
-  }, [content, isStreamMessageComplete, onStartThinking, onStopThinking]);
+  }, [
+    content,
+    isStreamMessageComplete,
+    onStartThinking,
+    onStopThinking,
+    startsWithThinkTag,
+  ]);
 
-  const toggleExpand = (segmentIndex: number) => {
-    setExpandedStates((prev) => ({
-      ...prev,
-      [segmentIndex]: !prev[segmentIndex],
-    }));
+  const toggleThinkingExpand = () => {
+    setIsThinkingExpanded((prev) => !prev);
   };
 
-  return splitSegments.map((segmentText, segmentIndex) => {
-    // Process the content before rendering
-    const processedText = wrapBoxedMathInDollarSigns(segmentText);
-
-    // Odd indices correspond to a text inside a <think>-style tag pair
-    const isThinkBlock = segmentIndex % 2 === 1;
-    if (isThinkBlock) {
-      const isExpanded = Boolean(expandedStates[segmentIndex]);
-      const isEmpty = processedText.trim() === '';
-
-      return (
-        <div key={segmentIndex} className="mb-3">
+  return (
+    <>
+      {startsWithThinkTag && (
+        <div className="mb-3">
           <ChevronToggleButton
             buttonText="Thinking"
             textClassName={clsx(
@@ -81,19 +101,22 @@ export default function AssistantMessage({
                 'animate-wipe',
               ],
             )}
-            isOpen={isExpanded}
-            onToggle={() => toggleExpand(segmentIndex)}
+            isOpen={isThinkingExpanded}
+            onToggle={toggleThinkingExpand}
           />
-          {isExpanded && !isEmpty && (
+          {isThinkingExpanded && thinkingContent.trim() !== '' && (
             <MarkdownRenderer
-              content={processedText}
+              content={wrapBoxedMathInDollarSigns(thinkingContent)}
               className="text-neutral-italic mt-2 text-neutral-500 dark:text-neutral-400"
             />
           )}
         </div>
-      );
-    }
-
-    return <MarkdownRenderer key={segmentIndex} content={processedText} />;
-  });
+      )}
+      {remainingContent.trim() !== '' && (
+        <MarkdownRenderer
+          content={wrapBoxedMathInDollarSigns(remainingContent)}
+        />
+      )}
+    </>
+  );
 }

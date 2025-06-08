@@ -80,22 +80,6 @@ describe('AssistantMessage component', () => {
     expect(screen.queryByTestId('thinking-toggle')).not.toBeInTheDocument();
   });
 
-  it('renders content with think tags and shows toggle button', () => {
-    render(
-      <AssistantMessage
-        {...defaultProps}
-        content="Before <think>Thinking content</think> After"
-      />,
-    );
-
-    expect(screen.getByText('Before')).toBeInTheDocument();
-    expect(screen.getByText('After')).toBeInTheDocument();
-    expect(screen.getByTestId('thinking-toggle')).toBeInTheDocument();
-
-    // Thinking content should be hidden initially
-    expect(screen.queryByText('Thinking content')).not.toBeInTheDocument();
-  });
-
   it('toggles thinking content visibility when clicked', () => {
     render(
       <AssistantMessage
