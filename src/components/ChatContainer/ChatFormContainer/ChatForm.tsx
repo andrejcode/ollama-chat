@@ -36,7 +36,15 @@ export default function ChatForm({
         return;
       }
 
-      if (textareaRef.current) {
+      const activeElement = document.activeElement;
+      const isInputFocused =
+        activeElement &&
+        (activeElement.tagName === 'INPUT' ||
+          activeElement.tagName === 'TEXTAREA' ||
+          (activeElement instanceof HTMLElement &&
+            activeElement.isContentEditable));
+
+      if (!isInputFocused && textareaRef.current) {
         textareaRef.current.focus();
       }
     };
