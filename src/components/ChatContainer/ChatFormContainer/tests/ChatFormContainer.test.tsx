@@ -1,8 +1,6 @@
 import ChatFormContainer from '@/components/ChatContainer/ChatFormContainer';
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 import useHealthContext from '@/hooks/useHealthContext';
-import AlertMessageProvider from '@/providers/AlertMessageProvider';
-import { useMessageStore } from '@/stores';
+import { useAlertMessageStore, useMessageStore } from '@/stores';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 import { generateUniqueId } from '@/utils';
 import { fireEvent, render, screen } from '@testing-library/react';
@@ -11,8 +9,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/stores', () => ({
   useMessageStore: vi.fn(),
+  useAlertMessageStore: vi.fn(),
 }));
-vi.mock('@/hooks/useAlertMessageContext');
 vi.mock('@/hooks/useHealthContext');
 vi.mock('@/providers/HealthProvider', () => ({
   default: ({ children }: { children: ReactNode }) => children,
@@ -21,16 +19,12 @@ vi.mock('@/utils', () => ({
   generateUniqueId: vi.fn(),
 }));
 
-const TestWrapper = ({ children }: { children: ReactNode }) => {
-  return <AlertMessageProvider>{children}</AlertMessageProvider>;
-};
-
 describe('ChatFormContainer component', () => {
   const mockStartChat = vi.fn();
   const mockRemoveStreamListener = vi.fn();
   let mockElectronApi: ReturnType<typeof createMockElectronApi>;
 
-  const mockAlertMessageContext = {
+  const mockAlertMessageStore = {
     alertMessage: null,
     updateAlertMessage: vi.fn(),
     clearAlertMessage: vi.fn(),
@@ -72,7 +66,13 @@ describe('ChatFormContainer component', () => {
       }
     ).getState = vi.fn().mockReturnValue(mockMessageStore);
 
-    vi.mocked(useAlertMessageContext).mockReturnValue(mockAlertMessageContext);
+    vi.mocked(useAlertMessageStore).mockImplementation((selector) => {
+      if (selector) {
+        return selector(mockAlertMessageStore);
+      }
+      return mockAlertMessageStore;
+    });
+
     vi.mocked(useHealthContext).mockReturnValue(mockHealthContext);
 
     mockElectronApi = createMockElectronApi();
@@ -92,7 +92,6 @@ describe('ChatFormContainer component', () => {
   it('renders ChatForm and WelcomeTitle with correct props', () => {
     render(
       <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
-      { wrapper: TestWrapper },
     );
 
     const welcomeTitle = screen.getByTestId('welcome-title');
@@ -107,7 +106,6 @@ describe('ChatFormContainer component', () => {
 
     render(
       <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
-      { wrapper: TestWrapper },
     );
 
     const textArea = screen.getByRole('textbox');
@@ -116,7 +114,7 @@ describe('ChatFormContainer component', () => {
     const form = screen.getByTestId('chat-form');
     fireEvent.submit(form);
 
-    expect(mockAlertMessageContext.clearAlertMessage).toHaveBeenCalled();
+    expect(mockAlertMessageStore.clearAlertMessage).toHaveBeenCalled();
     expect(mockMessageStore.addUserMessage).toHaveBeenCalledWith(
       'user-id',
       'Hello, Ollama!',
@@ -135,7 +133,6 @@ describe('ChatFormContainer component', () => {
   it('handles empty user input correctly', () => {
     render(
       <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
-      { wrapper: TestWrapper },
     );
 
     const form = screen.getByTestId('chat-form');
@@ -158,7 +155,6 @@ describe('ChatFormContainer component', () => {
 
     render(
       <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
-      { wrapper: TestWrapper },
     );
 
     const textArea = screen.getByRole('textbox');
@@ -194,7 +190,6 @@ describe('ChatFormContainer component', () => {
 
     render(
       <ChatFormContainer isChatStarted={false} onChatStart={mockStartChat} />,
-      { wrapper: TestWrapper },
     );
 
     const textArea = screen.getByRole('textbox');
@@ -207,7 +202,7 @@ describe('ChatFormContainer component', () => {
     });
 
     expect(mockMessageStore.stopLoadingAssistantMessage).toHaveBeenCalled();
-    expect(mockAlertMessageContext.updateAlertMessage).toHaveBeenCalledWith({
+    expect(mockAlertMessageStore.updateAlertMessage).toHaveBeenCalledWith({
       message: 'Connection error',
       type: 'error',
     });

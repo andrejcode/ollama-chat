@@ -1,5 +1,5 @@
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
 import useModelContext from '@/hooks/useModelContext.ts';
+import { useAlertMessageStore } from '@/stores';
 import clsx from 'clsx';
 import { RotateCcw as RotateIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -13,7 +13,9 @@ export default function Model() {
 
   const { isLoading, currentModel, models, updateCurrentModel } =
     useModelContext();
-  const { updateAlertMessage } = useAlertMessageContext();
+  const updateAlertMessage = useAlertMessageStore(
+    (state) => state.updateAlertMessage,
+  );
 
   const handleReload = async () => {
     try {

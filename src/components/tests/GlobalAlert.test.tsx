@@ -1,10 +1,10 @@
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
+import { useAlertMessageStore } from '@/stores';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import GlobalAlert from '../GlobalAlert';
 
-vi.mock('@/hooks/useAlertMessageContext', () => ({
-  default: vi.fn(),
+vi.mock('@/stores', () => ({
+  useAlertMessageStore: vi.fn(),
 }));
 
 describe('GlobalAlert component', () => {
@@ -15,7 +15,7 @@ describe('GlobalAlert component', () => {
   });
 
   it('renders nothing when alertMessage is null', () => {
-    vi.mocked(useAlertMessageContext).mockReturnValue({
+    vi.mocked(useAlertMessageStore).mockReturnValue({
       alertMessage: null,
       updateAlertMessage: vi.fn(),
       clearAlertMessage: mockClearAlertMessage,
@@ -26,7 +26,7 @@ describe('GlobalAlert component', () => {
   });
 
   it('renders error alert with correct message', () => {
-    vi.mocked(useAlertMessageContext).mockReturnValue({
+    vi.mocked(useAlertMessageStore).mockReturnValue({
       alertMessage: {
         message: 'Error occurred',
         type: 'error',
@@ -45,7 +45,7 @@ describe('GlobalAlert component', () => {
   });
 
   it('renders success alert with correct message', () => {
-    vi.mocked(useAlertMessageContext).mockReturnValue({
+    vi.mocked(useAlertMessageStore).mockReturnValue({
       alertMessage: {
         message: 'Operation successful',
         type: 'success',
@@ -64,7 +64,7 @@ describe('GlobalAlert component', () => {
   });
 
   it('calls clearAlertMessage when close button is clicked', () => {
-    vi.mocked(useAlertMessageContext).mockReturnValue({
+    vi.mocked(useAlertMessageStore).mockReturnValue({
       alertMessage: {
         message: 'Test message',
         type: 'error',
@@ -101,7 +101,7 @@ describe('GlobalAlert component', () => {
   });
 
   it('applies the correct classes for styling the error alert', () => {
-    vi.mocked(useAlertMessageContext).mockReturnValue({
+    vi.mocked(useAlertMessageStore).mockReturnValue({
       alertMessage: {
         message: 'Test message',
         type: 'error',

@@ -1,8 +1,8 @@
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
+import { useAlertMessageStore } from '@/stores';
 import Alert from './ui/Alert';
 
 export default function GlobalAlert() {
-  const { alertMessage, clearAlertMessage } = useAlertMessageContext();
+  const { alertMessage, clearAlertMessage } = useAlertMessageStore();
 
   if (!alertMessage) return null;
 

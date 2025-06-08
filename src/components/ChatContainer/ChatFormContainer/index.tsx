@@ -1,5 +1,4 @@
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
-import { useMessageStore } from '@/stores';
+import { useAlertMessageStore, useMessageStore } from '@/stores';
 import { generateUniqueId } from '@/utils';
 import type { Message } from '@shared/types';
 import { useState } from 'react';
@@ -20,7 +19,7 @@ export default function ChatFormContainer({
   const {
     updateAlertMessage: updateErrorMessage,
     clearAlertMessage: clearErrorMessage,
-  } = useAlertMessageContext();
+  } = useAlertMessageStore();
 
   const isLoadingAssistantMessage = useMessageStore(
     (state) => state.isLoadingAssistantMessage,

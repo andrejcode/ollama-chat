@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/require-await */
-import AlertMessageProvider from '@/providers/AlertMessageProvider';
 import { useSettingsModalStore } from '@/stores';
 import { createMockElectronApi } from '@/tests/utils/mocks';
 import { act, fireEvent, render, screen } from '@testing-library/react';
@@ -9,10 +8,6 @@ import SettingsModal from '../index';
 vi.mock('@/stores/settingsModalStore', () => ({
   useSettingsModalStore: vi.fn(),
 }));
-
-const TestWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <AlertMessageProvider>{children}</AlertMessageProvider>;
-};
 
 describe('SettingsModal component', () => {
   const mockCloseModal = vi.fn();
@@ -50,7 +45,7 @@ describe('SettingsModal component', () => {
 
   it('renders the modal when isModalOpen is true', async () => {
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     expect(screen.getByText('Settings')).toBeInTheDocument();
@@ -71,7 +66,7 @@ describe('SettingsModal component', () => {
     });
 
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     expect(screen.queryByText('Settings')).not.toBeInTheDocument();
@@ -79,7 +74,7 @@ describe('SettingsModal component', () => {
 
   it('calls setThemeDark when Dark button is clicked', async () => {
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     const darkButton = screen.getByText('Dark');
@@ -92,7 +87,7 @@ describe('SettingsModal component', () => {
 
   it('calls setThemeLight when Light button is clicked', async () => {
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     const lightButton = screen.getByText('Light');
@@ -105,7 +100,7 @@ describe('SettingsModal component', () => {
 
   it('calls setThemeSystem when System button is clicked', async () => {
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     const systemButton = screen.getByText('System');
@@ -118,7 +113,7 @@ describe('SettingsModal component', () => {
 
   it('calls closeModal when the close button is clicked', async () => {
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     const closeButton = screen.getByRole('button', { name: 'Close modal' });
@@ -131,7 +126,7 @@ describe('SettingsModal component', () => {
     mockElectronApi.getOllamaUrl.mockResolvedValue('http://localhost:1111');
 
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     const input = screen.getByPlaceholderText('http://localhost:11434');
@@ -144,7 +139,7 @@ describe('SettingsModal component', () => {
     const newUrl = 'http://new-url.com';
 
     await act(async () => {
-      render(<SettingsModal />, { wrapper: TestWrapper });
+      render(<SettingsModal />);
     });
 
     const input = screen.getByPlaceholderText('http://localhost:11434');

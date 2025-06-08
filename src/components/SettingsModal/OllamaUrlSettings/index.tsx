@@ -1,10 +1,12 @@
 import Button from '@/components/ui/Button';
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
+import { useAlertMessageStore } from '@/stores';
 import { Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function OllamaUrlSettings() {
-  const { updateAlertMessage } = useAlertMessageContext();
+  const updateAlertMessage = useAlertMessageStore(
+    (state) => state.updateAlertMessage,
+  );
 
   const [ollamaUrl, setOllamaUrl] = useState<string>('');
 

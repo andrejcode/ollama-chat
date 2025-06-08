@@ -1,5 +1,5 @@
 import HealthContext from '@/contexts/HealthContext';
-import useAlertMessageContext from '@/hooks/useAlertMessageContext';
+import { useAlertMessageStore } from '@/stores';
 import { useEffect, useState } from 'react';
 
 export default function HealthProvider({
@@ -12,7 +12,9 @@ export default function HealthProvider({
     message: 'Checking Ollama connection...',
   });
 
-  const { updateAlertMessage } = useAlertMessageContext();
+  const updateAlertMessage = useAlertMessageStore(
+    (state) => state.updateAlertMessage,
+  );
 
   useEffect(() => {
     // Load the stored health status
