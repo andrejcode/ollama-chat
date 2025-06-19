@@ -52,4 +52,11 @@ export enum IpcChannels {
   THEME_DARK = 'theme-dark',
   THEME_LIGHT = 'theme-light',
   THEME_SYSTEM = 'theme-system',
+
+  DB_CREATE_CHAT = 'db-create-chat',
+  DB_ADD_MESSAGE = 'db-add-message',
+  DB_GET_MESSAGES = 'db-get-messages',
+  DB_UPDATE_MESSAGE = 'db-update-message',
+  DB_GET_ALL_CHATS = 'db-get-all-chats',
+  DB_UPDATE_CHAT_TITLE = 'db-update-chat-title',
 }

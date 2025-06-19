@@ -16,6 +16,9 @@ interface MessageState {
   stopLoadingAssistantMessage: () => void;
   startStreamMessage: () => void;
   stopStreamMessage: () => void;
+
+  loadMessagesForChat: (chatId: string) => Promise<void>;
+  clearMessages: () => void;
 }
 
 export const useMessageStore = create<MessageState>((set) => ({
@@ -63,4 +66,20 @@ export const useMessageStore = create<MessageState>((set) => ({
   stopLoadingAssistantMessage: () => set({ isLoadingAssistantMessage: false }),
   startStreamMessage: () => set({ isStreamMessageComplete: false }),
   stopStreamMessage: () => set({ isStreamMessageComplete: true }),
+
+  loadMessagesForChat: async (chatId: string) => {
+    try {
+      const messages = await window.electronApi.getMessagesForChat(chatId);
+      set({ completedMessages: messages, streamingMessage: null });
+    } catch (error) {
+      console.error('Failed to load messages for chat:', error);
+      set({ completedMessages: [], streamingMessage: null });
+    }
+  },
+
+  clearMessages: () =>
+    set({
+      completedMessages: [],
+      streamingMessage: null,
+    }),
 }));

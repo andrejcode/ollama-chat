@@ -1,10 +1,28 @@
-import useChat from '@/hooks/useChat';
+import { useChatStore, useMessageStore } from '@/stores';
 import clsx from 'clsx';
+import { useEffect, useRef } from 'react';
 import Chat from './Chat';
 import ChatFormContainer from './ChatFormContainer';
 
 export default function ChatContainer() {
-  const { isChatStarted, startChat } = useChat();
+  const { currentChatId, isChatStarted } = useChatStore();
+  const { loadMessagesForChat, clearMessages } = useMessageStore();
+
+  const previousChatIdRef = useRef<string | null>(null);
+
+  // Load messages when current chat changes
+  useEffect(() => {
+    if (currentChatId) {
+      // Only load messages if this is an existing chat (not a newly created one)
+      // If previousChatId was null and currentChatId is set, it's likely a new chat
+      if (previousChatIdRef.current !== null) {
+        void loadMessagesForChat(currentChatId);
+      }
+    } else {
+      clearMessages();
+    }
+    previousChatIdRef.current = currentChatId;
+  }, [currentChatId, loadMessagesForChat, clearMessages]);
 
   return (
     <main
@@ -16,10 +34,7 @@ export default function ChatContainer() {
       )}
     >
       {isChatStarted && <Chat />}
-      <ChatFormContainer
-        isChatStarted={isChatStarted}
-        onChatStart={startChat}
-      />
+      <ChatFormContainer />
     </main>
   );
 }

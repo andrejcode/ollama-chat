@@ -1,3 +1,4 @@
+import { initDb, registerDbHandlers } from '@electron/db';
 import { app, BrowserWindow } from 'electron';
 import { initializeOllama, registerOllamaHandlers } from '../ollama';
 import { registerSidebarHandlers } from '../sidebar';
@@ -24,15 +25,17 @@ app.on('activate', () => {
   }
 });
 
-void app.whenReady().then(() => {
+void app.whenReady().then(async () => {
   window = createWindow();
   if (window) {
     initializeOllama(window);
   }
 
+  await initDb();
   initializeTheme();
 
   registerThemeHandlers();
   registerOllamaHandlers();
   registerSidebarHandlers();
+  registerDbHandlers();
 });

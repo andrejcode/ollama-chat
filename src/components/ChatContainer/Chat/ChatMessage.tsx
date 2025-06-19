@@ -49,7 +49,10 @@ const ChatMessage = memo(function ChatMessage({
         <div>{message.content}</div>
       ) : (
         <>
-          <LoadingSpinner isLoading={!!isLoadingAssistantMessage} />
+          <LoadingSpinner
+            isLoading={!!isLoadingAssistantMessage}
+            className="self-start"
+          />
           {!isLoadingAssistantMessage && (
             <AssistantMessage
               content={message.content}

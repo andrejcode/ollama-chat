@@ -1,6 +1,6 @@
 import { useSidebarStore } from '@/stores';
 import { PanelLeft } from 'lucide-react';
-import Button from '../ui/Button';
+import Button from './ui/Button';
 
 interface SidebarButtonProps {
   showOnlyWhenClosed?: boolean;

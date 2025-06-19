@@ -1,15 +1,11 @@
 import { THINK_TAG_REGEX } from '@/constants';
+import { useChatStore } from '@/stores';
 import type { Message } from '@shared/types';
-import { v4 } from 'uuid';
 
 export function getLastAssistantMessageIndex(messages: Message[]) {
   return messages.length > 0
     ? messages.map((message) => message.role).lastIndexOf('assistant')
     : -1;
-}
-
-export function generateUniqueId() {
-  return v4();
 }
 
 // We are considering here that reasoning models will
@@ -70,3 +66,66 @@ export const wrapBoxedMathInDollarSigns = (text: string) => {
 
   return result;
 };
+
+export function formatDistanceToNow(date: number | Date): string {
+  const now = Date.now();
+  const then = typeof date === 'number' ? date : date.getTime();
+  const diff = Math.floor((now - then) / 1000); // difference in seconds
+
+  if (diff < 60) return 'just now';
+
+  const minutes = Math.floor(diff / 60);
+  if (diff < 3600) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+
+  const hours = Math.floor(diff / 3600);
+  if (diff < 86400) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+
+  const days = Math.floor(diff / 86400);
+  if (diff < 2592000) return `${days} day${days === 1 ? '' : 's'} ago`;
+
+  const months = Math.floor(diff / 2592000);
+  if (diff < 31536000) return `${months} month${months === 1 ? '' : 's'} ago`;
+
+  const years = Math.floor(diff / 31536000);
+  return `${years} year${years === 1 ? '' : 's'} ago`;
+}
+
+export interface CreateNewChatOptions {
+  shouldStopChat?: boolean;
+  onError?: (error: Error) => void;
+}
+
+export async function createNewChat(options: CreateNewChatOptions = {}) {
+  const { shouldStopChat = false, onError } = options;
+
+  try {
+    const chatId = await window.electronApi.createChat();
+    const newChat = {
+      id: chatId,
+      title: null,
+      created_at: Date.now(),
+      updated_at: Date.now(),
+    };
+
+    // Get store actions
+    const { addChat, setCurrentChat, stopChat } = useChatStore.getState();
+
+    addChat(newChat);
+    setCurrentChat(chatId);
+
+    if (shouldStopChat) {
+      stopChat();
+    }
+
+    return { chatId, newChat };
+  } catch (error) {
+    const errorMessage = 'Failed to create new chat. Try restarting the app.';
+    console.error(errorMessage, error);
+
+    if (onError && error instanceof Error) {
+      onError(error);
+    }
+
+    throw error;
+  }
+}

@@ -2,7 +2,15 @@ import clsx from 'clsx';
 import { LoaderCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export default function LoadingSpinner({ isLoading }: { isLoading: boolean }) {
+interface LoadingSpinnerProps {
+  isLoading: boolean;
+  className?: string;
+}
+
+export default function LoadingSpinner({
+  isLoading,
+  className,
+}: LoadingSpinnerProps) {
   const [fadeClass, setFadeClass] = useState<'opacity-0' | 'opacity-100'>(
     'opacity-0',
   );
@@ -25,8 +33,9 @@ export default function LoadingSpinner({ isLoading }: { isLoading: boolean }) {
   return (
     <LoaderCircle
       className={clsx(
-        'mb-4 animate-spin self-start transition-opacity duration-500 ease-in-out',
+        'mb-4 animate-spin transition-opacity duration-500 ease-in-out',
         fadeClass,
+        className,
       )}
     />
   );

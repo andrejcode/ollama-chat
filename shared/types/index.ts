@@ -27,9 +27,21 @@ export interface ElectronApi {
   setThemeDark: () => Promise<void>;
   setThemeLight: () => Promise<void>;
   setThemeSystem: () => Promise<void>;
+
+  getChats: () => Promise<Chat[]>;
+  createChat: (title?: string) => Promise<string>;
+  addMessageToChat: (chatId: string, message: Message) => Promise<void>;
+  getMessagesForChat: (chatId: string) => Promise<Message[]>;
 }
 
 export type Theme = 'light' | 'dark' | 'system';
+
+export interface Chat {
+  id: string;
+  title: string | null;
+  created_at: number;
+  updated_at: number;
+}
 
 export interface Message {
   id: string;

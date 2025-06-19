@@ -89,6 +89,14 @@ const electronApi: ElectronApi = {
   setThemeDark: () => ipcRenderer.invoke(IpcChannels.THEME_DARK),
   setThemeLight: () => ipcRenderer.invoke(IpcChannels.THEME_LIGHT),
   setThemeSystem: () => ipcRenderer.invoke(IpcChannels.THEME_SYSTEM),
+
+  getChats: () => ipcRenderer.invoke(IpcChannels.DB_GET_ALL_CHATS),
+  createChat: (title?: string) =>
+    ipcRenderer.invoke(IpcChannels.DB_CREATE_CHAT, title),
+  addMessageToChat: (chatId: string, message: Message) =>
+    ipcRenderer.invoke(IpcChannels.DB_ADD_MESSAGE, chatId, message),
+  getMessagesForChat: (chatId: string) =>
+    ipcRenderer.invoke(IpcChannels.DB_GET_MESSAGES, chatId),
 };
 
 contextBridge.exposeInMainWorld('electronApi', electronApi);

@@ -28,5 +28,10 @@ export function createMockElectronApi() {
     setThemeDark: vi.fn(),
     setThemeLight: vi.fn(),
     setThemeSystem: vi.fn(),
+
+    getChats: vi.fn(),
+    createChat: vi.fn(),
+    addMessageToChat: vi.fn(),
+    getMessagesForChat: vi.fn(),
   };
 }

@@ -1,4 +1,5 @@
 import {
+  formatDistanceToNow,
   getLastAssistantMessageIndex,
   wrapBoxedMathInDollarSigns,
 } from '@/utils';
@@ -82,5 +83,119 @@ describe('wrapBoxedMathInDollarSigns', () => {
     const input = 'Start $\\boxed{a}$ middle \\boxed{b} end';
     const expected = 'Start $\\boxed{a}$ middle $\\boxed{b}$ end';
     expect(wrapBoxedMathInDollarSigns(input)).toBe(expected);
+  });
+});
+
+describe('formatDistanceToNow', () => {
+  const mockDateNow = (timestamp: number) => {
+    const originalDateNow = Date.now;
+    Date.now = () => timestamp;
+    return () => {
+      Date.now = originalDateNow;
+    };
+  };
+
+  it('should return "just now" for times less than 1 minute', () => {
+    const now = 1000000000000; // Some timestamp
+    const restore = mockDateNow(now);
+
+    expect(formatDistanceToNow(now - 30000)).toBe('just now'); // 30 seconds ago
+    expect(formatDistanceToNow(now - 59000)).toBe('just now'); // 59 seconds ago
+
+    restore();
+  });
+
+  it('should handle minutes correctly with singular/plural forms', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    expect(formatDistanceToNow(now - 60000)).toBe('1 minute ago'); // 1 minute ago
+    expect(formatDistanceToNow(now - 120000)).toBe('2 minutes ago'); // 2 minutes ago
+    expect(formatDistanceToNow(now - 3540000)).toBe('59 minutes ago'); // 59 minutes ago
+
+    restore();
+  });
+
+  it('should handle hours correctly with singular/plural forms', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    expect(formatDistanceToNow(now - 3600000)).toBe('1 hour ago'); // 1 hour ago
+    expect(formatDistanceToNow(now - 7200000)).toBe('2 hours ago'); // 2 hours ago
+    expect(formatDistanceToNow(now - 86399000)).toBe('23 hours ago'); // 23 hours ago
+
+    restore();
+  });
+
+  it('should handle days correctly with singular/plural forms', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    expect(formatDistanceToNow(now - 86400000)).toBe('1 day ago'); // 1 day ago
+    expect(formatDistanceToNow(now - 172800000)).toBe('2 days ago'); // 2 days ago
+    expect(formatDistanceToNow(now - 2591999000)).toBe('29 days ago'); // 29 days ago
+
+    restore();
+  });
+
+  it('should handle months correctly with singular/plural forms', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    expect(formatDistanceToNow(now - 2592000000)).toBe('1 month ago'); // 1 month ago
+    expect(formatDistanceToNow(now - 5184000000)).toBe('2 months ago'); // 2 months ago
+    expect(formatDistanceToNow(now - 31535999000)).toBe('12 months ago'); // 12 months ago
+
+    restore();
+  });
+
+  it('should handle years correctly with singular/plural forms', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    expect(formatDistanceToNow(now - 31536000000)).toBe('1 year ago'); // 1 year ago
+    expect(formatDistanceToNow(now - 63072000000)).toBe('2 years ago'); // 2 years ago
+    expect(formatDistanceToNow(now - 94608000000)).toBe('3 years ago'); // 3 years ago
+
+    restore();
+  });
+
+  it('should handle Date objects correctly', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    const dateObject = new Date(now - 3600000); // 1 hour ago
+    expect(formatDistanceToNow(dateObject)).toBe('1 hour ago');
+
+    restore();
+  });
+
+  it('should handle number timestamps correctly', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    const timestamp = now - 3600000; // 1 hour ago
+    expect(formatDistanceToNow(timestamp)).toBe('1 hour ago');
+
+    restore();
+  });
+
+  it('should handle edge cases around time boundaries', () => {
+    const now = 1000000000000;
+    const restore = mockDateNow(now);
+
+    // Just under 1 minute
+    expect(formatDistanceToNow(now - 59999)).toBe('just now');
+
+    // Exactly 1 minute
+    expect(formatDistanceToNow(now - 60000)).toBe('1 minute ago');
+
+    // Just under 1 hour
+    expect(formatDistanceToNow(now - 3599999)).toBe('59 minutes ago');
+
+    // Exactly 1 hour
+    expect(formatDistanceToNow(now - 3600000)).toBe('1 hour ago');
+
+    restore();
   });
 });

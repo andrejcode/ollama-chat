@@ -1,12 +1,10 @@
+import { useChatStore } from '@/stores';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
-export default function WelcomeTitle({
-  isChatStarted,
-}: {
-  isChatStarted: boolean;
-}) {
+export default function WelcomeTitle() {
   const [showTitle, setShowTitle] = useState<boolean>(true);
+  const isChatStarted = useChatStore((store) => store.isChatStarted);
 
   useEffect(() => {
     if (isChatStarted) {
@@ -14,6 +12,9 @@ export default function WelcomeTitle({
       const timeout = setTimeout(() => setShowTitle(false), 500);
 
       return () => clearTimeout(timeout);
+    } else {
+      // Show the title immediately when chat is not started
+      setShowTitle(true);
     }
   }, [isChatStarted]);
 
