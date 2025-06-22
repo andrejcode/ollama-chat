@@ -17,19 +17,26 @@ export default function ChatList() {
           There are no chats yet.
         </div>
       ) : (
-        <div className="p-2">
+        <div className="p-2" role="list" aria-label="Chat history">
           {chats.map((chat) => (
             <button
               key={chat.id}
               onClick={() => handleChatSelect(chat.id)}
-              className={`mb-2 w-full rounded-lg p-3 text-left transition-colors ${
+              className={`mb-2 w-full cursor-pointer rounded-lg p-3 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 dark:focus-visible:ring-neutral-500 ${
                 currentChatId === chat.id
                   ? 'bg-neutral-200 dark:bg-neutral-700'
-                  : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  : 'hover:bg-neutral-200 dark:hover:bg-neutral-800'
               }`}
+              role="listitem"
+              aria-label={`Select chat: ${chat.title || 'New Chat'}, created ${formatDistanceToNow(chat.created_at)}`}
+              aria-current={currentChatId === chat.id ? 'page' : undefined}
             >
               <div className="flex items-start gap-2">
-                <MessageSquare size={16} className="mt-1 flex-shrink-0" />
+                <MessageSquare
+                  size={16}
+                  className="mt-1 flex-shrink-0"
+                  aria-hidden="true"
+                />
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-medium">
                     {chat.title || 'New Chat'}

@@ -64,6 +64,9 @@ export default function Model() {
         textClassName="text-lg"
         isOpen={showDropdown}
         onToggle={handleDropdownToggle}
+        aria-label={`Model: ${currentModel}. Press to change.`}
+        aria-haspopup="listbox"
+        aria-expanded={showDropdown}
       />
       <ul
         className={clsx(
@@ -72,9 +75,12 @@ export default function Model() {
             ? 'pointer-events-auto opacity-100'
             : 'pointer-events-none opacity-0',
         )}
+        role="listbox"
+        aria-label="Select model"
+        aria-hidden={!showDropdown}
       >
         {models.map((model) => (
-          <li key={model.name} className="flex items-center">
+          <li key={model.name} className="flex items-center" role="option">
             <Button
               className="w-full text-left"
               onClick={() => handleModelSelect(model.name)}

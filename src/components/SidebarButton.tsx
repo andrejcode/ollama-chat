@@ -24,7 +24,11 @@ export default function SidebarButton({
   }
 
   return (
-    <Button onClick={handleClick}>
+    <Button
+      onClick={handleClick}
+      aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+      title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+    >
       <PanelLeft />
     </Button>
   );

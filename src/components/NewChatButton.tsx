@@ -37,7 +37,11 @@ export default function NewChatButton({
   }
 
   return (
-    <Button onClick={() => void handleNewChat()}>
+    <Button
+      onClick={() => void handleNewChat()}
+      aria-label="Start new chat"
+      title="Start new chat"
+    >
       <Plus />
     </Button>
   );
